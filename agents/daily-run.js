@@ -15,7 +15,7 @@ import { dirname, join } from 'path';
 
 import { scrapeCreatorReels }        from '../src/scrapers/apify.js';
 import { normalizeReels }            from '../src/scrapers/instagram.js';
-import { analyzeReels }              from '../src/analyzers/claude.js';
+import { analyzeReels, generateAndSaveRunSummary } from '../src/analyzers/claude.js';
 import { buildMetrics }              from '../src/utils/engagement.js';
 import { logger }                    from '../src/utils/logger.js';
 import {
@@ -83,6 +83,8 @@ for (const creator of activeCreators) {
     if (!brandNew.length && !needsAnalysis.length) {
       logger.info('No new or unanalyzed reels — skipping analysis');
       runStats.creatorsRun++;
+      const creatorRecordId = await upsertCreator(creator);
+      await generateAndSaveRunSummary(reels, creator.username, creatorRecordId);
       continue;
     }
 
@@ -123,6 +125,9 @@ for (const creator of activeCreators) {
     runStats.reelsNew  += created;
     runStats.creatorsRun++;
     logger.success(`@${creator.username}: ${created} new, ${patched} patched, ${done} skipped`);
+
+    // 9. Save run summary to Analyses table (always, using all stored reels)
+    await generateAndSaveRunSummary(reels, creator.username, creatorRecordId);
 
   } catch (e) {
     logger.error(`Failed for @${creator.username}`, e.message);

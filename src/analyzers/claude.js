@@ -115,6 +115,114 @@ export async function analyzeReels(reels) {
 
 
 // ─────────────────────────────────────────────────────────────
+// PART 1.5: RUN SUMMARY — saved to Analyses table after each creator scrape
+// ─────────────────────────────────────────────────────────────
+
+/**
+ * Generate a markdown summary report for a creator run and save it to Airtable.
+ * Called by daily-run.js after syncReelsToAirtable completes.
+ *
+ * @param {Array}  analyzedReels  — reels with aiAnalysis attached
+ * @param {string} creatorName    — Instagram username
+ * @param {string} creatorRecordId — Airtable record ID in Creators table
+ */
+export async function generateAndSaveRunSummary(analyzedReels, creatorName, creatorRecordId) {
+  if (!analyzedReels.length) return;
+
+  logger.info(`Generating run summary for @${creatorName}...`);
+
+  // Build stats locally — no extra Claude call needed for numbers
+  const tiers = { HIGH: 0, MID: 0, LOW: 0 };
+  const topicCount = {};
+  const hookTypeCount = {};
+  const contentTypeCount = {};
+  let totalScore = 0;
+  let totalViews = 0;
+  let totalLikes = 0;
+
+  for (const r of analyzedReels) {
+    const tier = r.engagementTier || 'LOW';
+    tiers[tier] = (tiers[tier] || 0) + 1;
+    totalScore += r.engagementScore || 0;
+    totalViews += r.views || 0;
+    totalLikes += r.likes || 0;
+
+    const a = r.aiAnalysis || {};
+    if (a.mainTopic && a.mainTopic !== 'Unknown') {
+      topicCount[a.mainTopic] = (topicCount[a.mainTopic] || 0) + 1;
+    }
+    if (a.hookType && a.hookType !== 'Other') {
+      hookTypeCount[a.hookType] = (hookTypeCount[a.hookType] || 0) + 1;
+    }
+    if (a.contentType && a.contentType !== 'Other') {
+      contentTypeCount[a.contentType] = (contentTypeCount[a.contentType] || 0) + 1;
+    }
+  }
+
+  const n = analyzedReels.length;
+  const avgScore = (totalScore / n).toFixed(4);
+  const avgViews = Math.round(totalViews / n).toLocaleString();
+  const topTopics = Object.entries(topicCount).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  const topHooks  = Object.entries(hookTypeCount).sort((a, b) => b[1] - a[1]).slice(0, 3);
+  const topTypes  = Object.entries(contentTypeCount).sort((a, b) => b[1] - a[1]).slice(0, 3);
+
+  // One Claude call to write the narrative summary
+  const summaryPrompt = `Write a concise markdown analysis report for @${creatorName}'s Instagram Reels.
+
+Data:
+- Reels analyzed: ${n}
+- Engagement tiers: ${tiers.HIGH} HIGH, ${tiers.MID} MID, ${tiers.LOW} LOW
+- Avg engagement score: ${avgScore}
+- Avg views: ${avgViews}
+- Top topics: ${topTopics.map(([t, c]) => `${t} (${c})`).join(', ')}
+- Top hook types: ${topHooks.map(([h, c]) => `${h} (${c})`).join(', ')}
+- Top content types: ${topTypes.map(([t, c]) => `${t} (${c})`).join(', ')}
+
+Write a markdown report with these sections:
+## Summary
+## Engagement Breakdown
+## Top Topics
+## Hook & Content Patterns
+## Key Takeaways (3 bullet points)
+
+Be specific and actionable. Max 400 words.`;
+
+  let reportContent = '';
+  try {
+    const msg = await client.messages.create({
+      model: MODEL,
+      max_tokens: 1024,
+      messages: [{ role: 'user', content: summaryPrompt }],
+    });
+    reportContent = msg.content.map(c => c.text || '').join('').trim();
+  } catch (e) {
+    // Fallback to stats-only report if Claude fails
+    reportContent = `## Summary\n@${creatorName} — ${n} reels analyzed on ${new Date().toISOString().slice(0, 10)}\n\n## Engagement Breakdown\n- HIGH: ${tiers.HIGH} | MID: ${tiers.MID} | LOW: ${tiers.LOW}\n- Avg score: ${avgScore} | Avg views: ${avgViews}\n\n## Top Topics\n${topTopics.map(([t, c]) => `- ${t} (${c} reels)`).join('\n')}\n\n## Hook Types\n${topHooks.map(([h, c]) => `- ${h} (${c} reels)`).join('\n')}`;
+  }
+
+  // Save to Analyses table
+  try {
+    const { createRecords } = await import('../airtable/client.js');
+    const { ANALYSES_TABLE, ANALYSES_FIELDS } = await import('../airtable/schema.js');
+
+    await createRecords(ANALYSES_TABLE, [{
+      [ANALYSES_FIELDS.creatorName]:   creatorName,
+      [ANALYSES_FIELDS.analysisType]:  'Gap',
+      [ANALYSES_FIELDS.runAt]:         new Date().toISOString().slice(0, 10),
+      [ANALYSES_FIELDS.completed]:     true,
+      [ANALYSES_FIELDS.reelsAnalyzed]: n,
+      [ANALYSES_FIELDS.reportContent]: reportContent,
+      [ANALYSES_FIELDS.modelUsed]:     MODEL,
+      [ANALYSES_FIELDS.notes]:         `Tiers: ${tiers.HIGH}H/${tiers.MID}M/${tiers.LOW}L | Avg score: ${avgScore} | Avg views: ${avgViews}`,
+    }]);
+    logger.success(`Run summary saved to Analyses table for @${creatorName}`);
+  } catch (e) {
+    logger.warn(`Could not save run summary to Analyses table: ${e.message}`);
+  }
+}
+
+
+// ─────────────────────────────────────────────────────────────
 // PART 2: POPPY DEEP ANALYSIS PROTOCOL
 // Run manually or on-demand for a single creator's reel set.
 // 5 sequential prompts — each builds on the last.
