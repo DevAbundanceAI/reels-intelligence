@@ -1,16 +1,16 @@
 {
   "creators": [
     {
-      "username": "alexhormozi",
-      "displayName": "Alex Hormozi",
+      "username": "officialjoelkaplan",
+      "displayName": "Joel Kaplan",
       "niche": "Business / Sales",
       "active": true,
       "reelsLimit": 20
     },
     {
-      "username": "garyvee",
-      "displayName": "Gary Vaynerchuk",
-      "niche": "Marketing / Entrepreneurship",
+      "username": "cristiano",
+      "displayName": "Cristiano Ronaldo",
+      "niche": "Sports / Lifestyle",
       "active": true,
       "reelsLimit": 15
     }
