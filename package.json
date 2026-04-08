@@ -1,0 +1,17 @@
+{
+  "name": "reels-intelligence",
+  "version": "1.0.0",
+  "description": "Daily Instagram Reels extraction and AI analysis pipeline",
+  "type": "module",
+  "scripts": {
+    "analyze": "node agents/daily-run.js",
+    "schedule": "node agents/scheduler.js",
+    "test-apify": "node src/scrapers/apify.js --test",
+    "test-airtable": "node src/airtable/client.js --test"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.27.0",
+    "dotenv": "^16.4.5",
+    "node-cron": "^3.0.3"
+  }
+}

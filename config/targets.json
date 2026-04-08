@@ -1,0 +1,23 @@
+{
+  "creators": [
+    {
+      "username": "alexhormozi",
+      "displayName": "Alex Hormozi",
+      "niche": "Business / Sales",
+      "active": true,
+      "reelsLimit": 20
+    },
+    {
+      "username": "garyvee",
+      "displayName": "Gary Vaynerchuk",
+      "niche": "Marketing / Entrepreneurship",
+      "active": true,
+      "reelsLimit": 15
+    }
+  ],
+  "defaults": {
+    "reelsLimit": 20,
+    "minViewsThreshold": 1000,
+    "skipIfScrapedWithinHours": 23
+  }
+}
