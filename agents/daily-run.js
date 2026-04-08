@@ -33,8 +33,10 @@ const targetsPath = join(__dir, '..', 'config', 'targets.json');
 
 // --- CLI args ---
 const args = process.argv.slice(2);
-const singleCreator = args[args.indexOf('--creator') + 1] || null;
-const limitOverride = args[args.indexOf('--limit') + 1]   || null;
+const creatorIdx    = args.indexOf('--creator');
+const limitIdx      = args.indexOf('--limit');
+const singleCreator = creatorIdx !== -1 ? args[creatorIdx + 1] : null;
+const limitOverride = limitIdx   !== -1 ? args[limitIdx   + 1] : null;
 
 // --- Load targets ---
 const { creators, defaults } = JSON.parse(readFileSync(targetsPath, 'utf8'));

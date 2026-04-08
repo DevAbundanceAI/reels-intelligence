@@ -107,6 +107,25 @@ export async function getRecord(table, recordId) {
   return airtableFetch(`/${encodedTable}/${recordId}`);
 }
 
+/**
+ * Delete up to 10 records at once (Airtable hard limit per request).
+ * Accepts an array of record IDs.
+ */
+export async function deleteRecords(table, recordIds) {
+  const encodedTable = encodeURIComponent(table);
+  const chunks = chunkArray(recordIds, 10);
+  let deleted = 0;
+
+  for (const chunk of chunks) {
+    const params = new URLSearchParams();
+    chunk.forEach(id => params.append('records[]', id));
+    await airtableFetch(`/${encodedTable}?${params}`, { method: 'DELETE' });
+    deleted += chunk.length;
+  }
+
+  return deleted;
+}
+
 function chunkArray(arr, size) {
   const out = [];
   for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
