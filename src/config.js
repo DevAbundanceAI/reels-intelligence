@@ -52,7 +52,9 @@ export const AIRTABLE_BASE_ID      = process.env.AIRTABLE_BASE_ID;
 export const AIRTABLE_REELS_TABLE     = process.env.AIRTABLE_REELS_TABLE     || 'Reels';
 export const AIRTABLE_CREATORS_TABLE  = process.env.AIRTABLE_CREATORS_TABLE  || 'Creators';
 export const AIRTABLE_RUNS_TABLE      = process.env.AIRTABLE_RUNS_TABLE      || 'Runs';
-export const AIRTABLE_ANALYSES_TABLE  = process.env.AIRTABLE_ANALYSES_TABLE  || 'Analyses';
+export const AIRTABLE_ANALYSES_TABLE           = process.env.AIRTABLE_ANALYSES_TABLE           || 'Analyses';
+export const AIRTABLE_CREATOR_ANALYSIS_TABLE   = process.env.AIRTABLE_CREATOR_ANALYSIS_TABLE   || 'Creator Analysis';
+export const AIRTABLE_CUMULATIVE_ANALYSIS_TABLE = process.env.AIRTABLE_CUMULATIVE_ANALYSIS_TABLE || 'Cumulative Analysis';
 
 // Scraping defaults
 export const REELS_PER_CREATOR     = parseInt(process.env.REELS_PER_CREATOR || '20');

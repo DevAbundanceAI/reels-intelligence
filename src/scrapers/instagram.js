@@ -25,6 +25,7 @@ export function normalizeReel(raw, username) {
 
     // Metrics (raw counts — scoring happens in engagement.js)
     videoViewCount: parseInt(raw.videoViewCount || raw.playsCount || 0),
+    videoPlayCount: parseInt(raw.videoPlayCount || 0),  // total plays incl. replays
     likesCount:     parseInt(raw.likesCount || raw.likeCount || 0),
     commentsCount:  parseInt(raw.commentsCount || raw.commentCount || 0),
     sharesCount:    parseInt(raw.sharesCount || 0),

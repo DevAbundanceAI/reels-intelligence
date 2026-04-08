@@ -1,4 +1,11 @@
-import { AIRTABLE_REELS_TABLE, AIRTABLE_CREATORS_TABLE, AIRTABLE_RUNS_TABLE, AIRTABLE_ANALYSES_TABLE } from '../config.js';
+import {
+  AIRTABLE_REELS_TABLE,
+  AIRTABLE_CREATORS_TABLE,
+  AIRTABLE_RUNS_TABLE,
+  AIRTABLE_ANALYSES_TABLE,
+  AIRTABLE_CREATOR_ANALYSIS_TABLE,
+  AIRTABLE_CUMULATIVE_ANALYSIS_TABLE,
+} from '../config.js';
 
 /**
  * Airtable field names — single source of truth.
@@ -22,7 +29,8 @@ export const REELS_FIELDS = {
   audioTitle:     'Audio',            // Single line text
 
   // Metrics
-  views:          'Views',            // Number
+  views:          'Views',            // Number — videoViewCount (raw impressions)
+  playCount:      'Play Count',       // Number — videoPlayCount (includes replays)
   likes:          'Likes',            // Number
   comments:       'Comments',         // Number
   shares:         'Shares',           // Number
@@ -63,12 +71,13 @@ export const REELS_FIELDS = {
 export const CREATORS_TABLE = AIRTABLE_CREATORS_TABLE;
 
 export const CREATORS_FIELDS = {
-  username:     'Username',           // Single line text — unique
-  displayName:  'Display Name',       // Single line text
-  niche:        'Niche',              // Single line text
-  active:       'Active',             // Checkbox
-  lastScraped:  'Last Scraped',       // Date
-  totalReels:   'Total Reels',        // Number (auto-count via Airtable rollup)
+  username:       'Username',         // Single line text — unique
+  displayName:    'Display Name',     // Single line text
+  niche:          'Niche',            // Single line text
+  active:         'Active',           // Checkbox
+  lastScraped:    'Last Scraped',     // Date
+  totalReels:     'Total Reels',      // Number
+  followersCount: 'Followers',        // Number — fetched via Apify profile scraper
 };
 
 export const RUNS_TABLE = AIRTABLE_RUNS_TABLE;
@@ -95,4 +104,42 @@ export const ANALYSES_FIELDS = {
   reportContent: 'Report Content',   // Long text — full markdown report stored here
   modelUsed:     'Model Used',       // Single line text — e.g. claude-opus-4-5
   notes:         'Notes',            // Long text — any extra context
+  reportFile:    'Report File',      // Single line text — local file path (NOTE: Airtable attachment
+                                     // fields require a public URL; this stores local path only)
+};
+
+// ── Creator Analysis — one record per creator, upserted after each run ──────
+export const CREATOR_ANALYSIS_TABLE = AIRTABLE_CREATOR_ANALYSIS_TABLE;
+
+export const CREATOR_ANALYSIS_FIELDS = {
+  username:           'Username',           // Single line text — unique key
+  displayName:        'Display Name',       // Single line text
+  totalReels:         'Total Reels',        // Number
+  avgEngagementScore: 'Avg Engagement Score', // Number (4 decimal)
+  highCount:          'HIGH Count',         // Number
+  midCount:           'MID Count',          // Number
+  lowCount:           'LOW Count',          // Number
+  topTopics:          'Top Topics',         // Long text — comma-separated
+  topHookTypes:       'Top Hook Types',     // Long text
+  topContentTypes:    'Top Content Types',  // Long text
+  contentFormula:     'Content Formula',    // Long text — Claude-generated (populated by deep analysis)
+  keyTakeaways:       'Key Takeaways',      // Long text — Claude-generated
+  reportFile:         'Report File',        // Single line text — local file path
+  lastAnalyzed:       'Last Analyzed',      // Date
+};
+
+// ── Cumulative Analysis — one record per multi-creator run ───────────────────
+export const CUMULATIVE_ANALYSIS_TABLE = AIRTABLE_CUMULATIVE_ANALYSIS_TABLE;
+
+export const CUMULATIVE_ANALYSIS_FIELDS = {
+  runDate:                  'Run Date',                      // Date
+  creators:                 'Creators',                      // Long text — comma-separated
+  creatorCount:             'Creator Count',                 // Number
+  totalReels:               'Total Reels',                   // Number
+  avgEngagementScore:       'Avg Engagement Score',          // Number (4 decimal)
+  topPerformingCreator:     'Top Performing Creator',        // Single line text
+  topTopics:                'Top Topics',                    // Long text
+  crossCreatorHookPatterns: 'Cross-Creator Hook Patterns',   // Long text
+  reportContent:            'Report Content',                // Long text
+  reportFile:               'Report File',                   // Single line text
 };

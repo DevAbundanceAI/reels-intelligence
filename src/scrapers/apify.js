@@ -22,9 +22,11 @@ async function apifyFetch(path, options = {}) {
 
 /**
  * Start an Apify actor run and return the run ID.
+ * @param {object} input — actor input payload
+ * @param {string} [actorId] — defaults to ACTOR_ID (reel scraper)
  */
-async function startRun(input) {
-  const data = await apifyFetch(`/acts/${ACTOR_ID}/runs`, {
+async function startRun(input, actorId = ACTOR_ID) {
+  const data = await apifyFetch(`/acts/${actorId}/runs`, {
     method: 'POST',
     body: JSON.stringify(input),
   });
@@ -85,6 +87,37 @@ export async function scrapeCreatorReels(username, limit = 20) {
   const items = await getRunItems(runId, limit);
   logger.success(`Fetched ${items.length} reels for @${username}`);
   return items;
+}
+
+/**
+ * Scrape profile data for a creator — returns follower count and basic profile info.
+ * Uses the apify~instagram-profile-scraper actor (separate from reel scraper).
+ * Returns null and logs a warning on failure so it never blocks the main pipeline.
+ *
+ * @param {string} username — Instagram handle (without @)
+ * @returns {Promise<{followersCount: number, fullName: string}|null>}
+ */
+export async function scrapeCreatorProfile(username) {
+  logger.info(`Apify: fetching profile for @${username}`);
+  try {
+    const input = { usernames: [username] };
+    const runId = await startRun(input, 'apify~instagram-profile-scraper');
+    logger.step(`Apify profile run started: ${runId}`);
+    await waitForRun(runId);
+    const items = await getRunItems(runId, 1);
+    const profile = items[0];
+    if (!profile || profile.error) {
+      logger.warn(`No profile data returned for @${username}`);
+      return null;
+    }
+    return {
+      followersCount: profile.followersCount || profile.followingCount && profile.edge_followed_by?.count || 0,
+      fullName:       profile.fullName || profile.biography && username || username,
+    };
+  } catch (e) {
+    logger.warn(`Profile scrape failed for @${username}: ${e.message}`);
+    return null;
+  }
 }
 
 /**

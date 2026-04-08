@@ -49,6 +49,8 @@ export const dailyScrape = schedules.task({
     console.log(`Daily scrape: triggering ${creators.length} creator tasks`);
     creators.forEach((c) => console.log(`  → @${c.username} (limit: ${c.reelsLimit})`));
 
+    const today = new Date().toISOString().slice(0, 10);
+
     // Fan out — one task per creator, all run in parallel on Trigger.dev
     const handles = await Promise.all(
       creators.map((creator) =>
@@ -57,6 +59,9 @@ export const dailyScrape = schedules.task({
           displayName: creator.displayName,
           niche:       creator.niche,
           reelsLimit:  creator.reelsLimit,
+        }, {
+          idempotencyKey:    `scrape-${creator.username}-${today}`,
+          idempotencyKeyTTL: "24h",
         })
       )
     );

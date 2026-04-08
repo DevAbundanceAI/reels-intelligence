@@ -1,7 +1,16 @@
 import Anthropic from '@anthropic-ai/sdk';
+import { writeFileSync, mkdirSync, existsSync } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 import { ANTHROPIC_API_KEY, CLAUDE_MODEL, CLAUDE_BATCH_SIZE } from '../config.js';
 import { logger } from '../utils/logger.js';
 import { frameworkSystemSuffix } from '../utils/frameworks.js';
+import { parseClaudeJSON, toISODate, airtableFormula } from '../utils/helpers.js';
+import { listRecords, createRecords } from '../airtable/client.js';
+import { REELS_TABLE, REELS_FIELDS, ANALYSES_TABLE, ANALYSES_FIELDS } from '../airtable/schema.js';
+
+const __dir = dirname(fileURLToPath(import.meta.url));
+const REPORTS_DIR = join(__dir, '..', '..', 'reports');
 
 const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY });
 const MODEL  = CLAUDE_MODEL;
@@ -71,7 +80,7 @@ async function analyzeBatch(reels) {
 
   const text = msg.content.map(c => c.text || '').join('');
   try {
-    return JSON.parse(text.replace(/```json|```/g, '').trim());
+    return parseClaudeJSON(text);
   } catch (e) {
     logger.warn('Claude returned unparseable JSON — returning empty analysis');
     logger.warn('Raw response:', text.slice(0, 300));
@@ -91,6 +100,11 @@ export async function analyzeReels(reels) {
   for (let i = 0; i < reels.length; i += BATCH) {
     const chunk = reels.slice(i, i + BATCH);
     logger.step(`Claude: batch ${Math.floor(i / BATCH) + 1} — ${chunk.length} reels`);
+
+    // Log reels with no transcript so the user knows analysis is caption-only
+    chunk.filter(r => !r.transcript?.trim()).forEach(r =>
+      logger.info(`No transcript for reel ${r.reelId} — caption-only analysis`)
+    );
 
     try {
       const analysis = await analyzeBatch(chunk);
@@ -119,19 +133,36 @@ export async function analyzeReels(reels) {
 // ─────────────────────────────────────────────────────────────
 
 /**
- * Generate a markdown summary report for a creator run and save it to Airtable.
- * Called by daily-run.js after syncReelsToAirtable completes.
+ * Generate a markdown summary report for a creator run and save it to Airtable + disk.
+ * Fetches analyzed reels directly from Airtable so metrics are accurate.
  *
- * @param {Array}  analyzedReels  — reels with aiAnalysis attached
- * @param {string} creatorName    — Instagram username
- * @param {string} creatorRecordId — Airtable record ID in Creators table
+ * @param {string} creatorName      — Instagram username
+ * @param {string} creatorRecordId  — Airtable record ID in Creators table
  */
-export async function generateAndSaveRunSummary(analyzedReels, creatorName, creatorRecordId) {
-  if (!analyzedReels.length) return;
-
+export async function generateAndSaveRunSummary(creatorName, creatorRecordId) {
   logger.info(`Generating run summary for @${creatorName}...`);
 
-  // Build stats locally — no extra Claude call needed for numbers
+  // Fetch analyzed reels FROM Airtable — in-memory reels have no metrics applied
+  let records;
+  try {
+    records = await listRecords(REELS_TABLE, {
+      filterFormula: `AND(${airtableFormula(REELS_FIELDS.username, creatorName)}, {${REELS_FIELDS.aiAnalyzed}} = TRUE())`,
+      fields: [
+        REELS_FIELDS.engagementScore, REELS_FIELDS.engagementTier,
+        REELS_FIELDS.views, REELS_FIELDS.likes,
+        REELS_FIELDS.mainTopic, REELS_FIELDS.hookType, REELS_FIELDS.contentType,
+      ],
+    });
+  } catch (e) {
+    logger.warn(`Could not fetch reels from Airtable for summary: ${e.message}`);
+    return;
+  }
+
+  if (!records.length) {
+    logger.info(`No analyzed reels found for @${creatorName} — skipping summary`);
+    return;
+  }
+
   const tiers = { HIGH: 0, MID: 0, LOW: 0 };
   const topicCount = {};
   const hookTypeCount = {};
@@ -140,33 +171,31 @@ export async function generateAndSaveRunSummary(analyzedReels, creatorName, crea
   let totalViews = 0;
   let totalLikes = 0;
 
-  for (const r of analyzedReels) {
-    const tier = r.engagementTier || 'LOW';
+  for (const rec of records) {
+    const f = rec.fields;
+    const tier = f[REELS_FIELDS.engagementTier] || 'LOW';
     tiers[tier] = (tiers[tier] || 0) + 1;
-    totalScore += r.engagementScore || 0;
-    totalViews += r.views || 0;
-    totalLikes += r.likes || 0;
+    totalScore += parseFloat(f[REELS_FIELDS.engagementScore] || 0);
+    totalViews += parseInt(f[REELS_FIELDS.views] || 0);
+    totalLikes += parseInt(f[REELS_FIELDS.likes] || 0);
 
-    const a = r.aiAnalysis || {};
-    if (a.mainTopic && a.mainTopic !== 'Unknown') {
-      topicCount[a.mainTopic] = (topicCount[a.mainTopic] || 0) + 1;
-    }
-    if (a.hookType && a.hookType !== 'Other') {
-      hookTypeCount[a.hookType] = (hookTypeCount[a.hookType] || 0) + 1;
-    }
-    if (a.contentType && a.contentType !== 'Other') {
-      contentTypeCount[a.contentType] = (contentTypeCount[a.contentType] || 0) + 1;
-    }
+    const topic = f[REELS_FIELDS.mainTopic];
+    if (topic && topic !== 'Unknown') topicCount[topic] = (topicCount[topic] || 0) + 1;
+
+    const hookType = f[REELS_FIELDS.hookType];
+    if (hookType && hookType !== 'Other') hookTypeCount[hookType] = (hookTypeCount[hookType] || 0) + 1;
+
+    const ct = f[REELS_FIELDS.contentType];
+    if (ct && ct !== 'Other') contentTypeCount[ct] = (contentTypeCount[ct] || 0) + 1;
   }
 
-  const n = analyzedReels.length;
+  const n = records.length;
   const avgScore = (totalScore / n).toFixed(4);
   const avgViews = Math.round(totalViews / n).toLocaleString();
   const topTopics = Object.entries(topicCount).sort((a, b) => b[1] - a[1]).slice(0, 5);
   const topHooks  = Object.entries(hookTypeCount).sort((a, b) => b[1] - a[1]).slice(0, 3);
   const topTypes  = Object.entries(contentTypeCount).sort((a, b) => b[1] - a[1]).slice(0, 3);
 
-  // One Claude call to write the narrative summary
   const summaryPrompt = `Write a concise markdown analysis report for @${creatorName}'s Instagram Reels.
 
 Data:
@@ -174,6 +203,7 @@ Data:
 - Engagement tiers: ${tiers.HIGH} HIGH, ${tiers.MID} MID, ${tiers.LOW} LOW
 - Avg engagement score: ${avgScore}
 - Avg views: ${avgViews}
+- Avg likes: ${Math.round(totalLikes / n).toLocaleString()}
 - Top topics: ${topTopics.map(([t, c]) => `${t} (${c})`).join(', ')}
 - Top hook types: ${topHooks.map(([h, c]) => `${h} (${c})`).join(', ')}
 - Top content types: ${topTypes.map(([t, c]) => `${t} (${c})`).join(', ')}
@@ -196,22 +226,36 @@ Be specific and actionable. Max 400 words.`;
     });
     reportContent = msg.content.map(c => c.text || '').join('').trim();
   } catch (e) {
-    // Fallback to stats-only report if Claude fails
-    reportContent = `## Summary\n@${creatorName} — ${n} reels analyzed on ${new Date().toISOString().slice(0, 10)}\n\n## Engagement Breakdown\n- HIGH: ${tiers.HIGH} | MID: ${tiers.MID} | LOW: ${tiers.LOW}\n- Avg score: ${avgScore} | Avg views: ${avgViews}\n\n## Top Topics\n${topTopics.map(([t, c]) => `- ${t} (${c} reels)`).join('\n')}\n\n## Hook Types\n${topHooks.map(([h, c]) => `- ${h} (${c} reels)`).join('\n')}`;
+    reportContent = `## Summary\n@${creatorName} — ${n} reels analyzed on ${toISODate()}\n\n## Engagement Breakdown\n- HIGH: ${tiers.HIGH} | MID: ${tiers.MID} | LOW: ${tiers.LOW}\n- Avg score: ${avgScore} | Avg views: ${avgViews}\n\n## Top Topics\n${topTopics.map(([t, c]) => `- ${t} (${c} reels)`).join('\n')}\n\n## Hook Types\n${topHooks.map(([h, c]) => `- ${h} (${c} reels)`).join('\n')}`;
+  }
+
+  // Write markdown file to reports/
+  let reportFile = '';
+  try {
+    if (!existsSync(REPORTS_DIR)) mkdirSync(REPORTS_DIR, { recursive: true });
+    const baseName = `analysis-${creatorName}-${toISODate()}`;
+    let filePath = join(REPORTS_DIR, `${baseName}.md`);
+    let version = 2;
+    while (existsSync(filePath)) {
+      filePath = join(REPORTS_DIR, `${baseName}-v${version++}.md`);
+    }
+    writeFileSync(filePath, reportContent, 'utf8');
+    reportFile = filePath;
+    logger.success(`Report written: ${filePath}`);
+  } catch (e) {
+    logger.warn(`Could not write report file: ${e.message}`);
   }
 
   // Save to Analyses table
   try {
-    const { createRecords } = await import('../airtable/client.js');
-    const { ANALYSES_TABLE, ANALYSES_FIELDS } = await import('../airtable/schema.js');
-
     await createRecords(ANALYSES_TABLE, [{
       [ANALYSES_FIELDS.creatorName]:   creatorName,
       [ANALYSES_FIELDS.analysisType]:  'Gap',
-      [ANALYSES_FIELDS.runAt]:         new Date().toISOString().slice(0, 10),
+      [ANALYSES_FIELDS.runAt]:         toISODate(),
       [ANALYSES_FIELDS.completed]:     true,
       [ANALYSES_FIELDS.reelsAnalyzed]: n,
       [ANALYSES_FIELDS.reportContent]: reportContent,
+      [ANALYSES_FIELDS.reportFile]:    reportFile,
       [ANALYSES_FIELDS.modelUsed]:     MODEL,
       [ANALYSES_FIELDS.notes]:         `Tiers: ${tiers.HIGH}H/${tiers.MID}M/${tiers.LOW}L | Avg score: ${avgScore} | Avg views: ${avgViews}`,
     }]);
@@ -268,7 +312,7 @@ Return JSON: { "perReel": [...], "patterns": {...} }`;
     messages: [{ role: 'user', content: prompt }],
   });
 
-  return JSON.parse(msg.content.map(c => c.text || '').join('').replace(/```json|```/g, '').trim());
+  return parseClaudeJSON(msg.content.map(c => c.text || '').join(''));
 }
 
 /**
@@ -310,7 +354,7 @@ Return JSON: { "perReel": [...], "patterns": {...} }`;
     messages: [{ role: 'user', content: prompt }],
   });
 
-  return JSON.parse(msg.content.map(c => c.text || '').join('').replace(/```json|```/g, '').trim());
+  return parseClaudeJSON(msg.content.map(c => c.text || '').join(''));
 }
 
 /**
@@ -364,7 +408,7 @@ Return JSON: { "perReel": [...], "patterns": {...} }`;
     messages: [{ role: 'user', content: prompt }],
   });
 
-  return JSON.parse(msg.content.map(c => c.text || '').join('').replace(/```json|```/g, '').trim());
+  return parseClaudeJSON(msg.content.map(c => c.text || '').join(''));
 }
 
 /**
@@ -409,7 +453,7 @@ Return JSON with those 7 keys.`;
     messages: [{ role: 'user', content: prompt }],
   });
 
-  return JSON.parse(msg.content.map(c => c.text || '').join('').replace(/```json|```/g, '').trim());
+  return parseClaudeJSON(msg.content.map(c => c.text || '').join(''));
 }
 
 /**
@@ -444,7 +488,7 @@ Return JSON with those 8 keys.`;
     messages: [{ role: 'user', content: prompt }],
   });
 
-  return JSON.parse(msg.content.map(c => c.text || '').join('').replace(/```json|```/g, '').trim());
+  return parseClaudeJSON(msg.content.map(c => c.text || '').join(''));
 }
 
 /**
