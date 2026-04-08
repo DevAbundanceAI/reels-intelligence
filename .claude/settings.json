@@ -1,0 +1,16 @@
+{
+  "model": "sonnet",
+  "effortLevel": "medium",
+  "mcpServers": {
+    "airtable": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@anthropic-ai/mcp-server-airtable"
+      ],
+      "env": {
+        "AIRTABLE_API_KEY": "${AIRTABLE_API_KEY}"
+      }
+    }
+  }
+}
