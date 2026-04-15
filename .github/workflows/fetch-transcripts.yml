@@ -25,10 +25,9 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: reels-intelligence/package-lock.json
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
-        working-directory: reels-intelligence
         run: npm ci
 
       - name: Install yt-dlp
@@ -37,7 +36,6 @@ jobs:
           yt-dlp --version
 
       - name: Write YouTube cookies
-        working-directory: reels-intelligence
         run: |
           cat > config/youtube-cookies.txt << 'COOKIES'
           ${{ secrets.YOUTUBE_COOKIES }}
@@ -46,7 +44,6 @@ jobs:
           echo "Cookies written: $(wc -l < config/youtube-cookies.txt) lines"
 
       - name: Create .env
-        working-directory: reels-intelligence
         run: |
           cat > .env << EOF
           APIFY_API_KEY=${{ secrets.APIFY_API_KEY }}
@@ -61,7 +58,6 @@ jobs:
           EOF
 
       - name: Fetch transcripts
-        working-directory: reels-intelligence
         run: |
           ARGS=""
           if [ -n "${{ github.event.inputs.channel }}" ]; then
