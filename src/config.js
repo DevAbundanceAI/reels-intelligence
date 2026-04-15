@@ -38,6 +38,7 @@ if (missing.length > 0) {
 // Apify
 export const APIFY_API_KEY         = process.env.APIFY_API_KEY;
 export const APIFY_ACTOR_ID        = process.env.APIFY_ACTOR_ID        || 'apify~instagram-reel-scraper';
+export const APIFY_YT_ACTOR_ID     = process.env.APIFY_YT_ACTOR_ID     || 'streamers~youtube-scraper';
 export const APIFY_POLL_INTERVAL   = parseInt(process.env.APIFY_POLL_INTERVAL_MS || '5000');
 export const APIFY_TIMEOUT         = parseInt(process.env.APIFY_TIMEOUT_MS       || '180000');
 export const INSTAGRAM_SESSION_ID  = process.env.INSTAGRAM_SESSION_ID  || null;

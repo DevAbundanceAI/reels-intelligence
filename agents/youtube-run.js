@@ -4,11 +4,19 @@
  * Direct parallel to daily-run.js for Instagram Reels.
  *
  * Usage:
- *   node agents/youtube-run.js                              # all active channels
- *   node agents/youtube-run.js --channel alexhormozi       # single channel
- *   node agents/youtube-run.js --limit 5                   # override video limit
- *   node agents/youtube-run.js --no-transcripts            # skip transcript fetch
- *   node agents/youtube-run.js --channel alexhormozi --limit 3 --no-transcripts
+ *   node agents/youtube-run.js                                    # all active channels
+ *   node agents/youtube-run.js --channel alexhormozi              # single channel
+ *   node agents/youtube-run.js --limit 5                          # override video limit
+ *   node agents/youtube-run.js --no-transcripts                   # skip transcript fetch
+ *   node agents/youtube-run.js --scraper apify                    # use Apify (cloud-safe, costs ~$0.50/1k)
+ *   node agents/youtube-run.js --scraper ytdlp                    # use yt-dlp (free, local/residential IP only)
+ *
+ * Scraper selection:
+ *   --scraper apify  → Apify youtube-scraper actor. Works from any IP. No transcripts.
+ *                      Use for scheduled cloud runs (Trigger.dev, GitHub Actions).
+ *   --scraper ytdlp  → yt-dlp CLI. Free. Requires residential IP (run locally on Mac).
+ *                      Supports transcripts. Default when YOUTUBE_COOKIES_FILE is set.
+ *   (default)        → ytdlp if YOUTUBE_COOKIES_FILE is set, otherwise apify
  */
 
 import { readFileSync }  from 'fs';
@@ -27,8 +35,9 @@ function progressBar(current, total, label = '', width = 24) {
   if (current >= total) process.stdout.write('\n');
 }
 
-import { scrapeChannelVideos, fetchVideoTranscript } from '../src/scrapers/ytdlp.js';
-import { normalizeVideo }                             from '../src/scrapers/youtube.js';
+import { scrapeChannelVideos, fetchVideoTranscript }  from '../src/scrapers/ytdlp.js';
+import { scrapeChannelVideosApify }                   from '../src/scrapers/apify-youtube.js';
+import { normalizeVideo, normalizeApifyVideo }         from '../src/scrapers/youtube.js';
 import { buildYTMetrics }                             from '../src/utils/youtube-engagement.js';
 import { analyzeReels }                               from '../src/analyzers/claude.js';
 import { logger }                                     from '../src/utils/logger.js';
@@ -40,7 +49,7 @@ import {
   syncUnanalyzedVideos,
   logYTRun,
 } from '../src/airtable/youtube-sync.js';
-import { YTDLP_CONCURRENCY } from '../src/config.js';
+import { YTDLP_CONCURRENCY, YOUTUBE_COOKIES_FILE } from '../src/config.js';
 
 const __dir = dirname(fileURLToPath(import.meta.url));
 const targetsPath = join(__dir, '..', 'config', 'youtube-targets.json');
@@ -50,9 +59,15 @@ const targetsPath = join(__dir, '..', 'config', 'youtube-targets.json');
 const args           = process.argv.slice(2);
 const channelIdx     = args.indexOf('--channel');
 const limitIdx       = args.indexOf('--limit');
+const scraperIdx     = args.indexOf('--scraper');
 const noTranscripts  = args.includes('--no-transcripts');
 const singleChannel  = channelIdx !== -1 ? args[channelIdx + 1] : null;
 const limitOverride  = limitIdx   !== -1 ? parseInt(args[limitIdx + 1]) : null;
+
+// Scraper: explicit flag > auto-detect from cookies file presence
+const scraperArg     = scraperIdx !== -1 ? args[scraperIdx + 1] : null;
+const useApify       = scraperArg === 'apify' || (!scraperArg && !YOUTUBE_COOKIES_FILE);
+const scraperName    = useApify ? 'apify' : 'ytdlp';
 
 // ─── Load targets ────────────────────────────────────────────────────────────
 
@@ -70,7 +85,8 @@ if (!activeChannels.length) {
   process.exit(0);
 }
 
-logger.info(`Starting YouTube run for ${activeChannels.length} channel(s)`);
+logger.info(`Starting YouTube run for ${activeChannels.length} channel(s) [scraper: ${scraperName}]`);
+if (useApify) logger.info('  Apify mode: transcripts will NOT be fetched. Run fetch-transcripts.js locally to backfill.');
 
 // ─── Transcript fetcher with concurrency limit ───────────────────────────────
 
@@ -112,11 +128,13 @@ for (const channel of activeChannels) {
   const limit      = limitOverride || channel.videoLimit || defaults.videoLimit;
   const doTranscripts = !noTranscripts && (channel.fetchTranscripts ?? defaults.fetchTranscripts);
 
-  logger.info(`\n── @${channel.channelUsername} (${channel.niche || 'unknown'}) — limit: ${limit}`);
+  logger.info(`\n── @${channel.channelUsername} (${channel.niche || 'unknown'}) — limit: ${limit} — scraper: ${scraperName}`);
 
   try {
-    // 1. Scrape raw video metadata via yt-dlp
-    const rawVideos = await scrapeChannelVideos(channel.channelUsername, limit);
+    // 1. Scrape raw video metadata
+    const rawVideos = useApify
+      ? await scrapeChannelVideosApify(channel.channelUsername, limit)
+      : await scrapeChannelVideos(channel.channelUsername, limit);
 
     if (rawVideos.length === 0) {
       logger.warn(`  No videos found for @${channel.channelUsername}`);
@@ -127,18 +145,21 @@ for (const channel of activeChannels) {
     logger.info(`  Fetched ${rawVideos.length} raw video(s)`);
     runStats.videosFetched += rawVideos.length;
 
-    // 2. Optionally fetch transcripts (concurrently)
+    // 2. Optionally fetch transcripts via yt-dlp (local only — skipped when using Apify)
     let transcripts = {};
-    if (doTranscripts) {
+    if (doTranscripts && !useApify) {
       logger.info(`  Fetching transcripts (concurrency: ${YTDLP_CONCURRENCY})...`);
       const videoIds = rawVideos.map(v => v.id).filter(Boolean);
       transcripts = await fetchTranscriptsWithConcurrency(videoIds);
+    } else if (doTranscripts && useApify) {
+      logger.info('  Skipping transcripts in Apify mode — run fetch-transcripts.js locally to backfill.');
     }
 
-    // 3. Normalize
+    // 3. Normalize (different normalizer per scraper)
+    const normalize = useApify ? normalizeApifyVideo : normalizeVideo;
     const videos = rawVideos
       .filter(raw => raw && raw.id)
-      .map(raw => normalizeVideo(raw, channel.channelUsername, transcripts[raw.id] || null));
+      .map(raw => normalize(raw, channel.channelUsername, transcripts[raw.id] || null));
 
     logger.info(`  Normalized: ${videos.length} video(s)`);
 
@@ -146,12 +167,14 @@ for (const channel of activeChannels) {
     const videosWithMetrics = videos.map(v => ({ ...v, ...buildYTMetrics(v) }));
 
     // 5. Upsert YouTube Creator record
+    const firstVideo = videos[0] || {};
     const creatorRecordId = await upsertYTCreator({
-      channelUsername: channel.channelUsername,
-      displayName:     channel.displayName || channel.channelUsername,
-      channelId:       rawVideos[0]?.channel_id || '',
-      niche:           channel.niche || '',
-      active:          true,
+      channelUsername:     channel.channelUsername,
+      displayName:         channel.displayName || channel.channelUsername,
+      channelId:           firstVideo.channelId || rawVideos[0]?.channel_id || '',
+      niche:               channel.niche || '',
+      active:              true,
+      subscriberCount:     firstVideo.numberOfSubscribers || 0,
     });
 
     // 6. Get existing videos, classify

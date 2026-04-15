@@ -84,3 +84,95 @@ export function normalizeVideos(rawArray, channelUsername, transcripts = {}) {
     .filter(raw => raw && raw.id)
     .map(raw => normalizeVideo(raw, channelUsername, transcripts[raw.id] || null));
 }
+
+// ─── Apify normalizer ────────────────────────────────────────────────────────
+
+/**
+ * Parse Apify duration string "HH:MM:SS" or "MM:SS" → total seconds.
+ */
+function parseDuration(str) {
+  if (!str || typeof str !== 'string') return 0;
+  const parts = str.split(':').map(Number);
+  if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+  if (parts.length === 2) return parts[0] * 60 + parts[1];
+  return 0;
+}
+
+/**
+ * Convert one raw Apify youtube-scraper item into the same clean video object
+ * shape as normalizeVideo() — so the rest of the pipeline is identical.
+ *
+ * Apify fields → our fields:
+ *   id            → videoId
+ *   url           → url
+ *   channelUsername → channelUsername (already clean, no @ prefix)
+ *   channelId     → channelId
+ *   title         → title
+ *   text          → description
+ *   hashtags      → tags (array of strings)
+ *   viewCount     → viewCount
+ *   likes         → likeCount
+ *   commentsCount → commentCount
+ *   duration      → duration (seconds, parsed from "HH:MM:SS")
+ *   date          → publishedAt (ISO already)
+ *   numberOfSubscribers → (used by upsertYTCreator, not stored on video)
+ *
+ * @param {object} raw        — single item from Apify dataset
+ * @param {string} channelUsername — fallback handle
+ * @param {string|null} transcript — from local yt-dlp run, or null
+ */
+export function normalizeApifyVideo(raw, channelUsername, transcript = null) {
+  const title       = raw.title || '';
+  const description = (raw.text || '').slice(0, 5000);
+  const duration    = parseDuration(raw.duration);
+  const videoUrl    = raw.url || `https://www.youtube.com/watch?v=${raw.id}`;
+  const isShort     = (duration > 0 && duration <= 180) || videoUrl.includes('/shorts/');
+
+  // channelUsername from Apify is already clean (no @)
+  const resolvedHandle = (raw.channelUsername || '').replace(/^@/, '') || channelUsername;
+
+  // hashtags may be array of strings or array of objects with .text
+  const tags = (raw.hashtags || [])
+    .map(h => (typeof h === 'string' ? h : h.text || ''))
+    .filter(Boolean)
+    .join(', ');
+
+  // publishedAt: Apify returns ISO like "2026-04-14T13:00:00.000Z"
+  const publishedAt = raw.date ? raw.date.split('T')[0] : null;
+
+  return {
+    videoId:         raw.id,
+    url:             videoUrl,
+    channelUsername: resolvedHandle,
+    channelId:       raw.channelId || '',
+
+    title,
+    description,
+    tags,
+    transcript:      transcript || '',
+    hook:            '',
+
+    caption:         `${title}\n\n${description}`.slice(0, 2000),
+
+    viewCount:       parseInt(raw.viewCount    || 0),
+    likeCount:       parseInt(raw.likes        || 0),
+    commentCount:    parseInt(raw.commentsCount || 0),
+    duration,
+    isShort,
+
+    publishedAt,
+    scrapedAt:       new Date().toISOString().split('T')[0],
+
+    // Pass-through for upsertYTCreator
+    numberOfSubscribers: parseInt(raw.numberOfSubscribers || 0),
+  };
+}
+
+/**
+ * Normalize an array of raw Apify youtube-scraper items.
+ */
+export function normalizeApifyVideos(rawArray, channelUsername, transcripts = {}) {
+  return rawArray
+    .filter(raw => raw && raw.id)
+    .map(raw => normalizeApifyVideo(raw, channelUsername, transcripts[raw.id] || null));
+}
