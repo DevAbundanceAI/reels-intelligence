@@ -11,10 +11,14 @@ on:
         description: 'Max videos to process'
         required: false
         default: '50'
+      runner:
+        description: 'Runner type: self-hosted (residential IP, works) or ubuntu-latest (Azure, blocked)'
+        required: false
+        default: 'self-hosted'
 
 jobs:
   fetch-transcripts:
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.inputs.runner || 'self-hosted' }}
 
     steps:
       - name: Checkout
@@ -24,22 +28,18 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         run: npm ci
 
       - name: Install yt-dlp
         run: |
-          pip install yt-dlp
+          pip install yt-dlp --break-system-packages 2>/dev/null || pip install yt-dlp
           yt-dlp --version
 
       - name: Write YouTube cookies
         run: |
-          cat > config/youtube-cookies.txt << 'COOKIES'
-          ${{ secrets.YOUTUBE_COOKIES }}
-          COOKIES
+          printf '%s' '${{ secrets.YOUTUBE_COOKIES }}' > config/youtube-cookies.txt
           chmod 444 config/youtube-cookies.txt
           echo "Cookies written: $(wc -l < config/youtube-cookies.txt) lines"
 
