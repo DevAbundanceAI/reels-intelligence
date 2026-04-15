@@ -40,6 +40,7 @@ export const APIFY_API_KEY         = process.env.APIFY_API_KEY;
 export const APIFY_ACTOR_ID        = process.env.APIFY_ACTOR_ID        || 'apify~instagram-reel-scraper';
 export const APIFY_POLL_INTERVAL   = parseInt(process.env.APIFY_POLL_INTERVAL_MS || '5000');
 export const APIFY_TIMEOUT         = parseInt(process.env.APIFY_TIMEOUT_MS       || '180000');
+export const INSTAGRAM_SESSION_ID  = process.env.INSTAGRAM_SESSION_ID  || null;
 
 // Anthropic / Claude
 export const ANTHROPIC_API_KEY     = process.env.ANTHROPIC_API_KEY;
@@ -64,3 +65,22 @@ export const CRON_SCHEDULE         = process.env.CRON_SCHEDULE          || '0 8 
 
 // Debug
 export const DEBUG                 = process.env.DEBUG === 'true';
+
+// ── Supadata — YouTube Transcript API ─────────────────────────────────────
+// Used for fetching transcripts from cloud IPs (Codespaces, servers) where
+// YouTube directly blocks yt-dlp requests. Free tier: 100/month.
+export const SUPADATA_API_KEY                = process.env.SUPADATA_API_KEY                         || null;
+
+// ── YouTube (yt-dlp) ───────────────────────────────────────────────────────
+export const YOUTUBE_VIDEOS_PER_CHANNEL      = parseInt(process.env.YOUTUBE_VIDEOS_PER_CHANNEL      || '20');
+export const YTDLP_TIMEOUT                   = parseInt(process.env.YTDLP_TIMEOUT_MS                || '120000');
+export const YTDLP_CONCURRENCY               = parseInt(process.env.YTDLP_CONCURRENCY               || '3');
+export const YOUTUBE_COOKIES_FILE            = process.env.YOUTUBE_COOKIES_FILE                     || null;
+export const AIRTABLE_YT_VIDEOS_TABLE        = process.env.AIRTABLE_YT_VIDEOS_TABLE                 || 'YouTube Videos';
+export const AIRTABLE_YT_CREATORS_TABLE      = process.env.AIRTABLE_YT_CREATORS_TABLE               || 'YouTube Creators';
+export const AIRTABLE_YT_RUNS_TABLE          = process.env.AIRTABLE_YT_RUNS_TABLE                   || 'YouTube Runs';
+export const YOUTUBE_CRON_SCHEDULE           = process.env.YOUTUBE_CRON_SCHEDULE                    || '0 9 1,15 * *';
+
+// ── Marketing ──────────────────────────────────────────────────────────────
+export const AIRTABLE_CONTENT_IDEAS_TABLE    = process.env.AIRTABLE_CONTENT_IDEAS_TABLE              || 'Content Ideas';
+export const AIRTABLE_CONTENT_CALENDAR_TABLE = process.env.AIRTABLE_CONTENT_CALENDAR_TABLE           || 'Content Calendar';

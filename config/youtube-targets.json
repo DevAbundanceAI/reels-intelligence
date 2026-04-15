@@ -1,0 +1,58 @@
+{
+  "channels": [
+    {
+      "channelUsername": "alexhormozi",
+      "displayName": "Alex Hormozi",
+      "niche": "Business / Entrepreneurship",
+      "active": true,
+      "videoLimit": 20,
+      "fetchTranscripts": true
+    },
+    {
+      "channelUsername": "alexbecker",
+      "displayName": "Alex Becker",
+      "niche": "Business / Marketing",
+      "active": true,
+      "videoLimit": 20,
+      "fetchTranscripts": true
+    },
+    {
+      "channelUsername": "garyvee",
+      "displayName": "Gary Vaynerchuk",
+      "niche": "Business / Entrepreneurship",
+      "active": true,
+      "videoLimit": 20,
+      "fetchTranscripts": true
+    },
+    {
+      "channelUsername": "TonyRobbinsLive",
+      "displayName": "Tony Robbins",
+      "niche": "Personal Development",
+      "active": true,
+      "videoLimit": 20,
+      "fetchTranscripts": true
+    },
+    {
+      "channelUsername": "codiesanchez",
+      "displayName": "Codie Sanchez",
+      "niche": "Business / Investing",
+      "active": true,
+      "videoLimit": 20,
+      "fetchTranscripts": true
+    },
+    {
+      "channelUsername": "TakiMoore",
+      "displayName": "Taki Moore",
+      "niche": "Business / Coaching",
+      "active": true,
+      "videoLimit": 20,
+      "fetchTranscripts": true
+    }
+  ],
+  "defaults": {
+    "videoLimit": 20,
+    "fetchTranscripts": true,
+    "skipIfScrapedWithinHours": 23,
+    "shortsOnly": false
+  }
+}

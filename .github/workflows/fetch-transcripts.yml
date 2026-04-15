@@ -1,0 +1,73 @@
+name: Fetch YouTube Transcripts
+
+on:
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: 'Channel to fetch (leave blank for all)'
+        required: false
+        default: ''
+      limit:
+        description: 'Max videos to process'
+        required: false
+        default: '50'
+
+jobs:
+  fetch-transcripts:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: reels-intelligence/package-lock.json
+
+      - name: Install dependencies
+        working-directory: reels-intelligence
+        run: npm ci
+
+      - name: Install yt-dlp
+        run: |
+          pip install yt-dlp
+          yt-dlp --version
+
+      - name: Write YouTube cookies
+        working-directory: reels-intelligence
+        run: |
+          cat > config/youtube-cookies.txt << 'COOKIES'
+          ${{ secrets.YOUTUBE_COOKIES }}
+          COOKIES
+          chmod 444 config/youtube-cookies.txt
+          echo "Cookies written: $(wc -l < config/youtube-cookies.txt) lines"
+
+      - name: Create .env
+        working-directory: reels-intelligence
+        run: |
+          cat > .env << EOF
+          APIFY_API_KEY=${{ secrets.APIFY_API_KEY }}
+          ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
+          AIRTABLE_API_KEY=${{ secrets.AIRTABLE_API_KEY }}
+          AIRTABLE_BASE_ID=${{ secrets.AIRTABLE_BASE_ID }}
+          YOUTUBE_COOKIES_FILE=config/youtube-cookies.txt
+          YTDLP_CONCURRENCY=3
+          AIRTABLE_YT_VIDEOS_TABLE=YouTube Videos
+          AIRTABLE_YT_CREATORS_TABLE=YouTube Creators
+          AIRTABLE_YT_RUNS_TABLE=YouTube Runs
+          EOF
+
+      - name: Fetch transcripts
+        working-directory: reels-intelligence
+        run: |
+          ARGS=""
+          if [ -n "${{ github.event.inputs.channel }}" ]; then
+            ARGS="--channel ${{ github.event.inputs.channel }}"
+          fi
+          if [ -n "${{ github.event.inputs.limit }}" ]; then
+            ARGS="$ARGS --limit ${{ github.event.inputs.limit }}"
+          fi
+          node agents/fetch-transcripts.js $ARGS
