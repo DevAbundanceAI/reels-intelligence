@@ -121,6 +121,21 @@ export async function scrapeCreatorProfile(username) {
 }
 
 /**
+ * Generic actor runner — start + poll + fetch items.
+ * Use this from new scrapers (TikTok, IG hashtag, etc.) so they don't have to
+ * duplicate the polling logic.
+ */
+export async function runActor(actorId, input, limit = 50) {
+  logger.info(`Apify: starting ${actorId}`);
+  const runId = await startRun(input, actorId);
+  logger.step(`Apify run started: ${runId}`);
+  await waitForRun(runId);
+  const items = await getRunItems(runId, limit);
+  logger.success(`Apify: ${items.length} items from ${actorId}`);
+  return items;
+}
+
+/**
  * Scrape a single reel URL.
  */
 export async function scrapeReelUrl(url, limit = 1) {

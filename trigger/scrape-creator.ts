@@ -3,6 +3,7 @@ import { scrapeCreatorReels, scrapeCreatorProfile } from "../src/scrapers/apify.
 import { normalizeReels }       from "../src/scrapers/instagram.js";
 import { analyzeReels, generateAndSaveRunSummary } from "../src/analyzers/claude.js";
 import { buildMetrics }         from "../src/utils/engagement.js";
+import { loadBrandDna, renderBrandDnaPrompt } from "../src/brand/dna.js";
 import {
   getExistingReels,
   classifyReels,
@@ -27,6 +28,17 @@ export const scrapeCreator = task({
   run: async (payload: CreatorPayload) => {
     const { username, displayName, reelsLimit } = payload;
     logger.info(`Starting scrape for @${username}`);
+
+    // 0. Load Brand DNA once per run. Missing DNA is non-fatal — pipeline
+    // falls back to generic analysis and the user gets a clear log.
+    let brandDnaPrompt: string | null = null;
+    try {
+      const dna = await loadBrandDna();
+      brandDnaPrompt = renderBrandDnaPrompt(dna);
+      logger.info(`Brand DNA: "${dna.brandName}" loaded — analyzer will score brand fit`);
+    } catch (e) {
+      logger.warn(`Brand DNA not loaded — running generic analysis. ${(e as Error).message}`);
+    }
 
     // 1. Scrape via Apify
     const rawReels = await scrapeCreatorReels(username, reelsLimit);
@@ -57,7 +69,7 @@ export const scrapeCreator = task({
     // --- Path A: Brand new reels ---
     if (brandNew.length > 0) {
       const withMetrics = brandNew.map(r => ({ ...r, ...buildMetrics(r) }));
-      const analyzed = await analyzeReels(withMetrics);
+      const analyzed = await analyzeReels(withMetrics, { brandDnaPrompt });
       totalCreated = await syncReelsToAirtable(analyzed, creatorRecordId);
     }
 
@@ -70,7 +82,7 @@ export const scrapeCreator = task({
         ...buildMetrics(reel),
       }));
 
-      const analyzed = await analyzeReels(reelsToAnalyze);
+      const analyzed = await analyzeReels(reelsToAnalyze, { brandDnaPrompt });
 
       const patchPayload = needsAnalysis.map(({ reel, airtableId }: { reel: any; airtableId: string }, i: number) => ({
         reel: { ...reel, aiAnalysis: analyzed[i]?.aiAnalysis },

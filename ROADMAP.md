@@ -1,6 +1,11 @@
 # Implementation Roadmap — Reels Intelligence
 # Complete guide: from zero to fully running system
 
+> **Brand DNA is cross-base.** It lives in a per-client Airtable base
+> registered in `Brand OS Master` → `Clients`. This pipeline reads it on
+> every run via `BRAND_DNA_BASE_ID`. Phase 0.5 below covers pointing the
+> repo at the right base — not building DNA inside this repo.
+
 ---
 
 ## PHASE 0 — Prerequisites (Do this before opening Claude Code)
@@ -79,6 +84,48 @@ Expected result:
 [2025-01-15 08:00:01] ✓ Apify connection OK — got 3 reels
 [2025-01-15 08:00:02] ✓ Airtable connection OK — table exists
 ```
+
+---
+
+## PHASE 0.5 — Point at the right Brand DNA base
+**Time: 5 minutes**
+**Goal: `.env` points at the client's Brand DNA base so every analyzer
+loads it on startup.**
+
+Do this BEFORE Phase 1 Step 1.6.
+
+### Step 0.5.1 — Find the base ID
+Open `Brand OS Master` → `Clients`. Pick the client row. The
+`Brand DNA Base ID` field holds the target base ID (starts with `app...`).
+
+If the client hasn't been onboarded yet:
+- **Quickest path:** point at Abundance's base (`appKg5KqW82kOucCL`) as a
+  placeholder. Brand-fit scores won't be relevant to this client, but the
+  pipeline will run end-to-end.
+- **Proper path:** duplicate Abundance's Brand DNA base structure, register
+  the new base in `Clients`, then have the client fill the onboarding form.
+
+### Step 0.5.2 — Set the env vars
+In `.env`:
+```env
+BRAND_DNA_BASE_ID=appXXXXXXXXXXXXXX
+# These default to the table IDs in Abundance's base — only change if the
+# new base uses different IDs (it shouldn't if you duplicated structure):
+BRAND_DNA_PROFILE_TABLE_ID=tbl1tkPkABIqyJjrF
+BRAND_DNA_VOICE_TABLE_ID=tbl7ZSgUKZFpiI2I6
+BRAND_DNA_ICPS_TABLE_ID=tblioaRLaLEQSwQ1x
+```
+
+### Step 0.5.3 — Verify
+Run any analyzer command from Phase 1.6 onwards. On startup it logs:
+```
+Brand DNA loaded: "Abundance.AI" from base appKg5KqW82kOucCL
+Claude: analyzing N reels in batches of 10 (brand-aware)
+```
+If you see `Brand DNA not loaded — running generic analysis`, fix
+BRAND_DNA_BASE_ID or check the base has a Brand Profile record.
+
+---
 
 ### Step 1.6 — Add your first creator and run a test scrape
 ```

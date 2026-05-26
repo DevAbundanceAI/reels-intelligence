@@ -16,6 +16,7 @@
     "node-cron": "^3.0.3"
   },
   "devDependencies": {
-    "@trigger.dev/build": "^3.3.17"
+    "@trigger.dev/build": "^3.3.17",
+    "typescript": "^5.9.3"
   }
 }

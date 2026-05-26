@@ -21,11 +21,31 @@ const BATCH  = CLAUDE_BATCH_SIZE;
 // Runs on every daily scrape. Fast, lightweight, per-video.
 // ─────────────────────────────────────────────────────────────
 
-const BATCH_SYSTEM = `You are a content intelligence analyst specializing in short-form video for Instagram creators.
+const BATCH_SYSTEM_BASE = `You are a content intelligence analyst specializing in short-form video for Instagram creators.
 Your job is to analyze reel data and extract structured insights that help creators understand what topics perform well.
 Always return valid JSON arrays only — no markdown, no explanation, no preamble.${frameworkSystemSuffix()}`;
 
-const BATCH_PROMPT = (reels) => `Analyze these ${reels.length} Instagram reels and return a JSON array with one object per reel (same order as input).
+/**
+ * Build the system payload.
+ *
+ * When brandDnaPrompt is present, returns an array of content blocks with
+ * the Brand DNA block marked for prompt caching. Brand DNA is ~10k tokens
+ * and is identical across every analyzer call in a run — caching it at
+ * `cache_control: ephemeral` cuts the per-call cost by ~4× after the
+ * first call writes the cache (5-minute TTL).
+ *
+ * When brandDnaPrompt is absent, returns a plain string (no cache benefit
+ * for the small base system).
+ */
+function buildSystem(brandDnaPrompt) {
+  if (!brandDnaPrompt) return BATCH_SYSTEM_BASE;
+  return [
+    { type: 'text', text: brandDnaPrompt, cache_control: { type: 'ephemeral' } },
+    { type: 'text', text: `\n\n---\n\n${BATCH_SYSTEM_BASE}` },
+  ];
+}
+
+const BATCH_PROMPT = (reels, brandAware) => `Analyze these ${reels.length} Instagram reels and return a JSON array with one object per reel (same order as input).
 
 Each object must have:
 - "mainTopic": primary topic in 3-5 words (e.g. "Cold outreach scripts", "Morning routine habits")
@@ -38,7 +58,9 @@ Each object must have:
 - "targetAudience": who this reel speaks to (e.g. "Early-stage founders", "Sales reps", "Gym beginners")
 - "emotionalTone": one of: "Inspiring", "Educational", "Entertaining", "Controversial", "Vulnerable", "Direct", "Humorous"
 - "ctaType": call-to-action type if present — one of: "Comment", "Link", "Apply", "Join", "DM", "Subscribe", "None", "Other"
-- "ctaPlacement": one of: "Early", "Mid", "End", "Multiple", "None"
+- "ctaPlacement": one of: "Early", "Mid", "End", "Multiple", "None"${brandAware ? `
+- "brandFit": one of: "HIGH" / "MID" / "LOW" / "BANNED" — how well this reel's topic+angle fits the Brand DNA above
+- "brandFitReason": one short sentence explaining the brandFit score, referencing the Brand DNA (pillars, ICP, banned topics, voice). If BANNED, state which Banned Topic or No-Go Word triggered it.` : ''}
 
 If transcript is empty, analyze from caption only and note that in keyPoints.
 
@@ -70,12 +92,13 @@ function emptyAnalysis() {
   };
 }
 
-async function analyzeBatch(reels) {
+async function analyzeBatch(reels, brandDnaPrompt) {
+  const brandAware = Boolean(brandDnaPrompt);
   const msg = await client.messages.create({
     model:      MODEL,
     max_tokens: 4096,
-    system:     BATCH_SYSTEM,
-    messages:   [{ role: 'user', content: BATCH_PROMPT(reels) }],
+    system:     buildSystem(brandDnaPrompt),
+    messages:   [{ role: 'user', content: BATCH_PROMPT(reels, brandAware) }],
   });
 
   const text = msg.content.map(c => c.text || '').join('');
@@ -90,24 +113,31 @@ async function analyzeBatch(reels) {
 
 /**
  * Per-reel batch analysis. Called by the daily Trigger.dev scrape task.
+ *
+ * @param {Array}  reels                            normalized reels for analysis
+ * @param {Object} [opts]
+ * @param {string} [opts.brandDnaPrompt]            rendered Brand DNA system block
+ *                                                  (from `renderBrandDnaPrompt`).
+ *                                                  When provided, analyzer adds
+ *                                                  brandFit + brandFitReason.
+ *
  * Returns reels with `aiAnalysis` property attached.
  * Skips reels where aiAnalyzed = true (token guard handled upstream in sync.js).
  */
-export async function analyzeReels(reels) {
-  logger.info(`Claude: analyzing ${reels.length} reels in batches of ${BATCH}`);
+export async function analyzeReels(reels, { brandDnaPrompt = null } = {}) {
+  logger.info(`Claude: analyzing ${reels.length} reels in batches of ${BATCH}${brandDnaPrompt ? ' (brand-aware)' : ''}`);
 
   const results = [];
   for (let i = 0; i < reels.length; i += BATCH) {
     const chunk = reels.slice(i, i + BATCH);
     logger.step(`Claude: batch ${Math.floor(i / BATCH) + 1} — ${chunk.length} reels`);
 
-    // Log reels with no transcript so the user knows analysis is caption-only
     chunk.filter(r => !r.transcript?.trim()).forEach(r =>
       logger.info(`No transcript for reel ${r.reelId} — caption-only analysis`)
     );
 
     try {
-      const analysis = await analyzeBatch(chunk);
+      const analysis = await analyzeBatch(chunk, brandDnaPrompt);
       chunk.forEach((reel, j) => {
         results.push({ ...reel, aiAnalysis: analysis[j] || emptyAnalysis() });
       });

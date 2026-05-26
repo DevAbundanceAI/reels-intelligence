@@ -1,10 +1,18 @@
 # Reels Intelligence — Claude Code Framework
 
 ## Project Purpose
-Daily automated extraction and AI analysis of Instagram Reels for creator research.
-Scrapes public reels via Apify, analyzes content with Claude, stores structured results
-in Airtable. Includes a research agent for content gap, trending topic, hook pattern,
-and competitor analysis on top of stored data.
+Brand-aware competitor reel intelligence. Every Trigger.dev run loads the
+client's **Brand DNA** from their own Airtable base, scrapes competitor reels
+via Apify, asks Claude to analyze each one **through the lens of that DNA**,
+and writes both the generic analysis and a brand-fit score (HIGH / MID / LOW /
+BANNED) to Airtable. The research agent then produces gap, hook, trending, and
+deep reports that are aligned to the brand — not generic.
+
+> **Brand DNA is cross-base, not in this repo's base.** It lives in a
+> per-client Airtable base, registered in `Brand OS Master` → `Clients`.
+> This pipeline READS Brand DNA. It does NOT own it. The Onboarding form view
+> on each client's Brand DNA base feeds an upstream Brand DNA generator
+> (separate system). See `BRAND_DNA_BASE_ID` in `.env`.
 
 ## Tools in Use
 - **Claude Code** — the primary interface for ALL development, setup, debugging, and research
@@ -109,6 +117,10 @@ reels-intelligence/
 ```
 daily-scrape.ts (cron: 0 8 * * *)
   └── scrape-creator.ts (one per creator, in parallel)
+        0. loadBrandDna() → fetch active brand from Airtable Brand DNA table.
+                            Renders a system prompt block threaded into every
+                            Claude call. Missing DNA is non-fatal — falls back
+                            to generic analysis (with a warning log).
         1. Apify scrape → raw reels
         2. Normalize (instagram.js)
         3. getExistingReels() → Map of reelId → { airtableId, aiAnalyzed }
@@ -116,11 +128,60 @@ daily-scrape.ts (cron: 0 8 * * *)
              brandNew      → store + analyze (Claude called)
              needsAnalysis → stored but aiAnalyzed=false → analyze + patch
              done          → aiAnalyzed=true → skip (zero Claude calls)
-        5. analyzeReels() on brandNew + needsAnalysis only
-        6. syncReelsToAirtable() for brandNew
+        5. analyzeReels(reels, { brandDnaPrompt }) on brandNew + needsAnalysis
+        6. syncReelsToAirtable() for brandNew (writes brandFit + brandFitReason)
         7. syncUnanalyzedReels() to patch needsAnalysis
         8. Return { fetched, created, patched, alreadyDone }
 ```
+
+## Brand DNA — cross-base, multi-tenant
+
+Brand DNA lives in a **separate per-client Airtable base**, not in the Reels
+Intelligence base. The multi-tenant control plane is `Brand OS Master`
+(`appKbLVhrxH7HqnFd`) → `Clients` table. Each client row has a `Brand DNA
+Base ID` pointing at their own Brand DNA base.
+
+Each client's Brand DNA base has these tables (mirrored from Abundance):
+- **Brand Profile** — identity, transformation, big idea, anti-positioning, founder origin, proprietary terminology, shared enemy, voice POV, etc.
+- **Brand Voice** — tone & persona, voice rules, forbidden topics, approved copy examples, founder voice samples
+- **ICPs** — 4 records per client (Primary / Secondary / Tertiary / Negative), with mindset across awareness stages, daggers, financial reality
+- **Offers, Offer FAQs, Milestones, Case Studies, Frameworks Library** — additional reference data
+- **Onboarding Responses** — public Airtable form view that feeds the upstream Brand DNA generator (separate system, not this repo)
+
+This pipeline READS that DNA on every run. It does NOT write to it.
+
+### Config
+```env
+BRAND_DNA_BASE_ID=appKg5KqW82kOucCL          # client's Brand DNA base
+BRAND_DNA_PROFILE_TABLE_ID=tbl1tkPkABIqyJjrF # Brand Profile table
+BRAND_DNA_VOICE_TABLE_ID=tbl7ZSgUKZFpiI2I6   # Brand Voice table
+BRAND_DNA_ICPS_TABLE_ID=tblioaRLaLEQSwQ1x    # ICPs table
+```
+Defaults point at Abundance.AI's base as a placeholder. Switch to AN's base
+once it's onboarded as a Client row.
+
+### Loader
+`src/brand/dna.js`:
+- `loadBrandDna()` — cross-base fetch of Profile + Voice + ICPs, returns a
+  normalized object. Cached per-process.
+- `renderBrandDnaPrompt(dna)` — turns the object into a Claude system block
+  with rules ("reject Forbidden Topics", "score vs Primary ICP", etc.)
+
+### Brand-fit output
+When DNA is loaded, every per-reel analysis includes:
+- `brandFit` — HIGH / MID / LOW / BANNED (single select in the local Reels table)
+- `brandFitReason` — one sentence citing the Primary ICP pain, Forbidden
+  Topic, or Voice Rule
+
+Use the `Brand Fit` field in Airtable to filter competitor reels by what
+fits OUR brand instead of what's merely generically viral.
+
+### Adding a new client
+1. Duplicate Abundance's Brand DNA base structure into a new base for the client.
+2. Add a row to `Clients` in Brand OS Master with the new `Brand DNA Base ID`.
+3. Either fill the new base manually OR have the client submit the Onboarding
+   Responses form (the upstream Brand DNA generator populates the rest).
+4. Point this repo at the new base via `BRAND_DNA_BASE_ID` (or pass at runtime).
 
 ## Token Cost Control — Analysis Dedup
 Every reel record has three fields that guard against re-analysis:

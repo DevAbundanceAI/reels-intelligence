@@ -162,6 +162,11 @@ function reelToFields(reel, analyzed = false) {
     [REELS_FIELDS.ctaType]:        a.ctaType      || 'None',
     [REELS_FIELDS.ctaPlacement]:   a.ctaPlacement || 'None',
 
+    // Brand fit — only populated when Brand DNA was loaded for this run.
+    // When absent, leave both empty so Airtable doesn't force a default value.
+    ...(a.brandFit       ? { [REELS_FIELDS.brandFit]:       a.brandFit }       : {}),
+    ...(a.brandFitReason ? { [REELS_FIELDS.brandFitReason]: a.brandFitReason } : {}),
+
     // Analysis status guard
     [REELS_FIELDS.aiAnalyzed]:     analyzed,
     [REELS_FIELDS.analyzedAt]:     analyzed ? now : null,

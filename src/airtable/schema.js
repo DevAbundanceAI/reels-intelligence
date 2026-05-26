@@ -6,10 +6,17 @@ import {
   AIRTABLE_CREATOR_ANALYSIS_TABLE,
   AIRTABLE_CUMULATIVE_ANALYSIS_TABLE,
   AIRTABLE_YT_VIDEOS_TABLE,
+  AIRTABLE_YT_SHORTS_TABLE,
+  AIRTABLE_YT_LONGFORM_TABLE,
   AIRTABLE_YT_CREATORS_TABLE,
   AIRTABLE_YT_RUNS_TABLE,
   AIRTABLE_CONTENT_IDEAS_TABLE,
   AIRTABLE_CONTENT_CALENDAR_TABLE,
+  AIRTABLE_TRENDING_SOURCES_TABLE,
+  AIRTABLE_IG_TRENDING_TABLE,
+  AIRTABLE_YT_SHORTS_TRENDING_TABLE,
+  AIRTABLE_YT_LONGFORM_TRENDING_TABLE,
+  AIRTABLE_TIKTOK_TRENDING_TABLE,
 } from '../config.js';
 
 /**
@@ -63,6 +70,11 @@ export const REELS_FIELDS = {
   ctaType:        'CTA Type',         // Single select: Comment, Link, Apply, Join, DM, Subscribe, None, Other
   ctaPlacement:   'CTA Placement',    // Single select: Early, Mid, End, Multiple, None
 
+  // Brand-fit — filled only when an active Brand DNA record is loaded.
+  // Lets us filter competitor content by "would this work for OUR brand?"
+  brandFit:       'Brand Fit',        // Single select: HIGH / MID / LOW / BANNED
+  brandFitReason: 'Brand Fit Reason', // Long text — why Claude scored it this way
+
   // Content longevity
   contentLongevity: 'Content Longevity', // Single select: Evergreen / Trending / Time-Sensitive
 
@@ -89,6 +101,7 @@ export const CREATORS_FIELDS = {
   lastScraped:    'Last Scraped',     // Date
   totalReels:     'Total Reels',      // Number
   followersCount: 'Followers',        // Number — fetched via Apify profile scraper
+  reelsLimit:     'Reels Limit',      // Number — per-creator override on global REELS_PER_CREATOR
 };
 
 export const RUNS_TABLE = AIRTABLE_RUNS_TABLE;
@@ -223,10 +236,23 @@ export const YT_CREATORS_FIELDS = {
   channelId:       'Channel ID',        // Single line text
   niche:           'Niche',             // Single line text
   active:          'Active',            // Checkbox
+  contentTypes:    'Content Types',     // multipleSelects — Shorts, Long-form, or both
+  fetchTranscripts:'Fetch Transcripts', // Checkbox
+  videoLimit:      'Video Limit',       // Number — per-creator override
   subscriberCount: 'Subscribers',       // Number precision:0
   totalVideos:     'Total Videos',      // Number precision:0
   lastScraped:     'Last Scraped',      // Date
+  longformLinks:   'YouTube Long-form', // multipleRecordLinks → YouTube Long-form table
+  shortsLinks:     'YouTube Shorts',    // multipleRecordLinks → YouTube Shorts table
 };
+
+// ── YouTube Shorts / Long-form (split in live base) ──────────────────────────
+// Both tables share the same field shape as YT_VIDEOS_FIELDS above.
+// Use the destination table constant based on video duration.
+export const YT_SHORTS_TABLE   = AIRTABLE_YT_SHORTS_TABLE;
+export const YT_LONGFORM_TABLE = AIRTABLE_YT_LONGFORM_TABLE;
+export const YT_SHORTS_FIELDS   = YT_VIDEOS_FIELDS;
+export const YT_LONGFORM_FIELDS = YT_VIDEOS_FIELDS;
 
 // ── YouTube Runs — log of every YouTube pipeline run ─────────────────────────
 export const YT_RUNS_TABLE = AIRTABLE_YT_RUNS_TABLE;
@@ -273,6 +299,9 @@ export const CONTENT_IDEAS_FIELDS = {
   notes:                   'Notes',                     // Long text
 };
 
+// Brand DNA is NOT stored in this base. It lives in a separate per-client
+// base (see `src/brand/dna.js` and `Brand OS Master` → Clients table).
+
 // ── Content Calendar — scheduled posts linked to Content Ideas ────────────────
 export const CONTENT_CALENDAR_TABLE = AIRTABLE_CONTENT_CALENDAR_TABLE;
 
@@ -306,3 +335,129 @@ export const CONTENT_CALENDAR_FIELDS = {
   createdAt:       'Created At',        // Date
   notes:           'Notes',             // Long text
 };
+
+// ── Trending Sources — discovery queue. Hashtags, niche creators, submitted URLs ──
+export const TRENDING_SOURCES_TABLE = AIRTABLE_TRENDING_SOURCES_TABLE;
+
+export const TRENDING_SOURCES_FIELDS = {
+  query:           'Query',              // Single line text — the hashtag, channel handle, or label
+  sourceType:      'Source Type',        // Single select: IG Hashtag / YT Shorts Trending / Niche Creator / etc.
+  platform:        'Platform',           // Single select: Instagram / YouTube / TikTok
+  region:          'Region',             // Single line text — e.g. "US"
+  niche:           'Niche',              // Single line text
+  active:          'Active',             // Checkbox — only Active=true sources scrape on daily cron
+  limit:           'Limit',              // Number — items to scrape per run
+  lastScraped:     'Last Scraped',       // Date — set after each successful scrape
+  submittedUrl:    'Submitted URL',      // URL — set when a row comes in via the public form
+  platformOverride:'Platform Override',  // Single select — when Submitted URL needs forced routing
+  forceRescrape:   'Force Rescrape',     // Checkbox — set true to bypass dedup. Watcher clears after pickup.
+};
+
+// ── Trending content tables (per-platform discovery results) ────────────────
+// IG Trending, YT Shorts Trending, YT Long-form Trending, TikTok Trending all
+// share a near-identical shape so analysis code can reuse one path. Per-table
+// specifics: TikTok has Shares + Share Ratio %; YT tables use Channel Username
+// instead of Username; URL fields are sometimes singleLineText vs url type.
+const TRENDING_COMMON_FIELDS = {
+  // Identity
+  id:              'Reel ID',            // (IG/TikTok) — IG/TikTok use Reel ID; YT uses Video ID
+  url:             'URL',
+  username:        'Username',           // (IG/TikTok) — channel handle for YT
+
+  // Content
+  caption:         'Caption',            // IG/TikTok; YT uses Title + Description
+  transcript:      'Transcript',
+  hashtags:        'Hashtags',
+  hook:            'Hook',
+  audio:           'Audio',
+
+  // Metrics
+  views:           'Views',
+  playCount:       'Play Count',         // (IG only)
+  likes:           'Likes',
+  comments:        'Comments',
+  shares:          'Shares',              // (IG, TikTok) — YT has no Shares
+  duration:        'Duration (s)',
+
+  engagementScore: 'Engagement Score',
+  likeRatio:       'Like Ratio %',
+  commentRatio:    'Comment Ratio %',
+  shareRatio:      'Share Ratio %',       // (TikTok only)
+  engagementTier:  'Engagement Tier',
+
+  // AI Analysis
+  mainTopic:       'Main Topic',
+  topics:          'Topics',
+  contentType:     'Content Type',
+  keyPoints:       'Key Points',
+  targetAudience:  'Target Audience',
+  emotionalTone:   'Emotional Tone',
+  hookType:        'Hook Type',
+  hookCategory:    'Hook Category',
+  ctaType:         'CTA Type',
+  ctaPlacement:    'CTA Placement',
+  contentLongevity:'Content Longevity',
+  contentFormat:   'Content Format',
+
+  // Source / lineage
+  sourceHashtag:   'Source Hashtag',     // (IG)
+  source:          'Source',             // (YT/TikTok) — channel or hashtag label
+  niche:           'Niche',
+
+  // Modeling lifecycle — drives the URL-submission → modeled-script flow
+  usedInModeledScript: 'Used in Modeled Script', // Checkbox
+  generateNow:     'Generate Now',       // Checkbox — set true to trigger generate-from-url
+  generated:       'Generated',          // Checkbox — set true after generate-from-url succeeds
+  generatedIdea:   'Generated Idea',     // Long text — generated content idea blurb
+
+  // Analysis guard
+  aiAnalyzed:      'AI Analyzed',
+  analyzedAt:      'Analyzed At',
+  analysisModel:   'Analysis Model',
+
+  // Timestamps
+  publishedAt:     'Published At',
+  scrapedAt:       'Scraped At',
+};
+
+export const IG_TRENDING_TABLE       = AIRTABLE_IG_TRENDING_TABLE;
+export const IG_TRENDING_FIELDS      = TRENDING_COMMON_FIELDS;
+
+export const YT_SHORTS_TRENDING_TABLE   = AIRTABLE_YT_SHORTS_TRENDING_TABLE;
+export const YT_SHORTS_TRENDING_FIELDS  = {
+  ...TRENDING_COMMON_FIELDS,
+  id:       'Video ID',
+  username: 'Channel Username',
+  // YT tables also carry Title + Description in place of Caption
+  title:       'Title',
+  description: 'Description',
+  channelId:   'Channel ID',
+  tags:        'Tags',
+};
+
+export const YT_LONGFORM_TRENDING_TABLE  = AIRTABLE_YT_LONGFORM_TRENDING_TABLE;
+export const YT_LONGFORM_TRENDING_FIELDS = YT_SHORTS_TRENDING_FIELDS;
+
+export const TIKTOK_TRENDING_TABLE   = AIRTABLE_TIKTOK_TRENDING_TABLE;
+export const TIKTOK_TRENDING_FIELDS  = {
+  ...TRENDING_COMMON_FIELDS,
+  id:       'Video ID',
+  username: 'Channel Username',
+  title:       'Title',
+  description: 'Description',
+  channelId:   'Channel ID',
+  tags:        'Tags',
+};
+
+// Helper: map a `Source Type` value to its destination trending table.
+export function trendingTableFor(sourceType, platform) {
+  const p = (platform || '').toLowerCase();
+  const t = (sourceType || '').toLowerCase();
+  if (p.includes('tiktok') || t.includes('tiktok'))         return TIKTOK_TRENDING_TABLE;
+  if (p.includes('youtube') || t.includes('yt') || t.includes('youtube')) {
+    if (t.includes('long')) return YT_LONGFORM_TRENDING_TABLE;
+    return YT_SHORTS_TRENDING_TABLE;
+  }
+  // Default: Instagram
+  return IG_TRENDING_TABLE;
+}
