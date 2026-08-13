@@ -1,0 +1,9 @@
+# Secrets - never commit
+.env
+config/brands.json
+*service-account*.json
+*.key.json
+
+# Pipeline working files
+downloads/
+output/

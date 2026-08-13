@@ -1,0 +1,54 @@
+{
+  "_comment": "Copy to brands.json (gitignored) and fill in real IDs. One entry per brand/client. Budgets are in the account's minor currency unit (cents).",
+  "brands": {
+    "expert-health": {
+      "meta_ad_account_id": "act_XXXXXXXXXXXX",
+      "meta_page_id": "XXXXXXXXXXXX",
+      "pixel_id": "XXXXXXXXXXXX",
+      "instagram_account_id": "XXXXXXXXXXXX",
+      "default_daily_budget": 2000,
+      "default_objective": "OUTCOME_LEADS",
+      "default_landing_page": "https://getexperthealth.com",
+      "default_targeting": {
+        "age_min": 30,
+        "age_max": 60,
+        "genders": [1, 2],
+        "geo_locations": { "countries": ["US"] },
+        "publisher_platforms": ["facebook", "instagram"],
+        "facebook_positions": ["feed", "story"],
+        "instagram_positions": ["stream", "story", "reels"]
+      },
+      "drive_root_folder_id": "PASTE_FROM_--list-brand-folders",
+      "compliance_profile": "health_strict",
+      "compliance_dont_list": [
+        "numeric weight-loss outcome claims",
+        "guarantees of any kind",
+        "before/after phrasing or imagery references",
+        "shame or personal-attribute language",
+        "prescription drug names"
+      ],
+      "special_ad_categories": [],
+      "token_env": "META_ACCESS_TOKEN_EH",
+      "dsa_beneficiary": "",
+      "dsa_payor": ""
+    },
+    "another-brand": {
+      "meta_ad_account_id": "act_YYYYYYYYYYYY",
+      "meta_page_id": "YYYYYYYYYYYY",
+      "pixel_id": "",
+      "instagram_account_id": "",
+      "default_daily_budget": 5000,
+      "default_objective": "OUTCOME_TRAFFIC",
+      "default_landing_page": "https://example.com",
+      "default_targeting": {
+        "age_min": 18,
+        "geo_locations": { "countries": ["US"] }
+      },
+      "drive_root_folder_id": "",
+      "compliance_profile": "standard",
+      "compliance_dont_list": [],
+      "special_ad_categories": [],
+      "token_env": "META_ACCESS_TOKEN"
+    }
+  }
+}
