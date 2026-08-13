@@ -7,3 +7,6 @@ config/brands.json
 # Pipeline working files
 downloads/
 output/
+
+__pycache__/
+*.pyc
