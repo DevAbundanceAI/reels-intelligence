@@ -234,3 +234,99 @@ ${dna.negativeIcp ? `**${dna.negativeIcp.label}** — ${dna.negativeIcp.whyNotFi
 5. Voice should match the Approved Copy Examples, not the analyzed creator's.
 `;
 }
+
+/**
+ * Render Brand DNA for content GENERATION (content-engine).
+ *
+ * Richer than the analyzer prompt on purpose: generation needs the voice
+ * samples, offer ladder, credibility stats, and presenter energy that the
+ * analyzer deliberately omits for token economy. Generation runs are few
+ * and human-reviewed, so the extra tokens are worth it — and the block is
+ * cached with cache_control: ephemeral like the analyzer's.
+ */
+export function renderBrandDnaGenerationPrompt(dna) {
+  const v = dna.voice || {};
+  const icp = dna.primaryIcp;
+
+  return `# Brand DNA: ${dna.brandName}
+
+You are writing content AS **${dna.brandName}** — first-person brand voice,
+not commentary about the brand. Every hook, slide, caption, and script you
+produce is something the brand itself will publish.
+
+## Identity
+${dna.companyIdentity || '(not set)'}
+
+**One-liner:** ${dna.oneLiner || '(not set)'}
+
+## Transformation We Promise
+${dna.transformation || '(not set)'}
+
+## The Big Idea / Unique Mechanism
+${dna.bigIdea || '(not set)'}
+
+## Founder Origin
+${dna.founderOrigin || '(not set)'}
+
+## Anti-Positioning (what we are NOT)
+${dna.antiPositioning || '(not set)'}
+
+## The Shared Enemy
+${dna.sharedEnemy || '(not set)'}
+
+## Proprietary Terminology (use naturally where it fits)
+${dna.proprietaryTerms || '(not set)'}
+
+## Credibility & Stats (only cite what appears here — never invent numbers)
+${dna.credibilityStats || '(not set)'}
+
+## Offer Ladder (what CTAs can point to)
+${dna.offerLadder || '(not set)'}
+
+## Voice
+**POV:** ${dna.voicePOV || '(not set)'}
+
+**Presenter Energy:** ${dna.presenterEnergy || '(not set)'}
+
+**Tone & Persona:** ${v.tonePersona || '(not set)'}
+
+**Voice Rules:** ${v.voiceRules || '(not set)'}
+
+**Forbidden Topics:** ${v.forbiddenTopics || '(not set)'}
+
+**Approved Copy Examples (match this voice exactly):**
+${v.approvedCopy || '(not set)'}
+
+**Founder Voice Samples (how the founder actually talks):**
+${v.founderSamples || '(not set)'}
+
+## Primary ICP${icp ? ` — ${icp.label}` : ''}
+${icp ? `**Identity:** ${icp.identity}
+
+**World / Day-In-Life:** ${icp.world}
+
+**Core Pain:** ${icp.corePain}
+
+**Desire:** ${icp.desire}
+
+**Voice-of-Customer Language (use their words):** ${icp.vocLanguage}
+
+**Daggers (what they've tried that failed):** ${icp.daggers}` : '(no Primary ICP record found)'}
+
+## Negative ICP (never write for these people)
+${dna.negativeIcp ? `**${dna.negativeIcp.label}** — ${dna.negativeIcp.whyNotFit}` : '(not set)'}
+
+## Rules for every output
+1. Write AS the brand. Match the Approved Copy Examples and Founder Voice
+   Samples — not the competitors whose research inspired the angle.
+2. Never violate a Voice Rule or touch a Forbidden Topic. If an angle
+   requires one, refuse it and say why instead of softening it.
+3. Every piece targets the Primary ICP's Core Pain and Desire, in their
+   Voice-of-Customer language. Never write for the Negative ICP.
+4. Never invent statistics, client results, or credibility claims — only
+   use what the Credibility & Stats section provides.
+5. CTAs must point to something real on the Offer Ladder.
+6. No em dashes or en dashes anywhere in output copy — use normal hyphens
+   or restructure the sentence.
+`;
+}

@@ -1,0 +1,15 @@
+{
+  "slug": "sample-agency-lies",
+  "title": "Three lies agencies tell about leads",
+  "ideaRecordId": null,
+  "slides": [
+    {"type": "hook", "eyebrow": "Agency Truths", "headline": "Your agency is not lying to you. The model is.", "emphasis": "The model", "sub": "Why retainers reward activity instead of outcomes."},
+    {"type": "point", "number": 1, "headline": "Retainers pay for effort, not results.", "emphasis": "not results", "body": "When the invoice clears whether you close or not, reporting becomes the product. You end up buying decks."},
+    {"type": "list", "eyebrow": "The Pattern", "headline": "What the busywork cycle looks like.", "emphasis": "busywork", "items": ["Weekly calls about impressions", "A dashboard nobody opens", "New creative every month, same close rate", "Renewal talk in month five"]},
+    {"type": "chart", "eyebrow": "The Math", "headline": "Where the retainer actually goes.", "emphasis": "actually", "chart": {"kind": "bar", "labels": ["Reporting", "Meetings", "Ads work", "Strategy"], "values": [35, 25, 30, 10], "unit": "%"}, "insight": "Illustrative split. Ask your agency for their real one."},
+    {"type": "cta", "headline": "Buy outcomes, not activity.", "emphasis": "outcomes", "body": "We only win when you close. See how in the comments."}
+  ],
+  "caption": "Sample caption.",
+  "hashtags": "#agency #leads",
+  "first_comment_link": null
+}

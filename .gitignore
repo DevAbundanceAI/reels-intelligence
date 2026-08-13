@@ -2,3 +2,8 @@
 node_modules/
 reports/
 *.log
+
+# content-engine working files
+content-engine/queue/
+content-engine/output/
+content-engine/scripts/
