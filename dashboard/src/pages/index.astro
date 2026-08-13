@@ -1,0 +1,110 @@
+---
+import '../styles/global.css';
+import { env } from '../lib/env';
+import { TriggerClient, type TriggerRun, type TriggerSchedule } from '../lib/trigger';
+import { TASKS, TASKS_BY_KIND } from '../lib/tasks';
+import { statsForTask, statsAcrossAll, failingTaskIds, formatCost, formatRelative } from '../lib/aggregate';
+import StatCard from '../components/StatCard.astro';
+import TaskRow from '../components/TaskRow.astro';
+
+const secret = env('TRIGGER_SECRET_KEY');
+
+let runs: TriggerRun[] = [];
+let schedules: TriggerSchedule[] = [];
+let error: string | null = null;
+
+if (!secret) {
+  error = 'Missing TRIGGER_SECRET_KEY. Set it in .env (local) or Cloudflare Pages env (prod).';
+} else {
+  try {
+    const client = new TriggerClient(secret);
+    // Single fetch of recent runs covers the entire index page.
+    [runs, schedules] = await Promise.all([
+      client.listRuns(50),
+      client.listSchedules().catch(() => []),
+    ]);
+  } catch (e) {
+    error = (e as Error).message;
+  }
+}
+
+const stats24h = statsAcrossAll(runs);
+const failingIds = failingTaskIds(runs, TASKS.map((t) => t.id));
+const scheduleById = new Map(schedules.map((s) => [s.task, s]));
+---
+
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Reels Intelligence · Ops</title>
+</head>
+<body class="min-h-screen">
+  <div class="max-w-6xl mx-auto px-6 py-8">
+    <header class="mb-8 flex items-baseline justify-between">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight">Reels Intelligence · <span class="gradient-text">Ops</span></h1>
+        <p class="text-sm text-[var(--text-dimmed)] mt-1">10 Trigger.dev tasks · cron watchers + bi-weekly orchestrators + event workers</p>
+      </div>
+      <div class="flex items-center gap-4 text-xs">
+        <a href="/agents" class="text-[var(--accent-start)] hover:underline underline-offset-4 font-medium">Agent view →</a>
+        <span class="text-[var(--text-dimmed)]">
+          {runs.length > 0 ? `${runs.length} runs · ${formatRelative(runs[0].finishedAt ?? runs[0].updatedAt ?? null)}` : 'No runs visible'}
+        </span>
+      </div>
+    </header>
+
+    {error ? (
+      <div class="bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-800 mb-6">
+        <strong>Failed to load runs.</strong> {error}
+      </div>
+    ) : null}
+
+    <section class="grid grid-cols-4 gap-4 mb-8">
+      <StatCard label="Recent runs" value={String(stats24h.total)} sublabel="Last 50 visible" />
+      <StatCard
+        label="Success rate"
+        value={stats24h.total === 0 ? '—' : `${stats24h.successRate}%`}
+        sublabel={`${stats24h.succeeded} ok · ${stats24h.failed} failed`}
+        tone={stats24h.total === 0 ? 'default' : stats24h.successRate >= 95 ? 'success' : stats24h.successRate >= 70 ? 'warning' : 'danger'}
+      />
+      <StatCard label="Spend" value={formatCost(stats24h.totalCostUsd)} sublabel="Across visible runs" />
+      <StatCard
+        label="Failing tasks"
+        value={String(failingIds.length)}
+        sublabel={failingIds.length === 0 ? 'All green' : failingIds.join(', ')}
+        tone={failingIds.length === 0 ? 'success' : 'danger'}
+      />
+    </section>
+
+    {(['cron', 'orchestrator', 'worker'] as const).map((kind) => {
+      const sectionTasks = TASKS_BY_KIND[kind];
+      const heading = kind === 'cron' ? 'Cron Watchers (every 15 min)' : kind === 'orchestrator' ? 'Scheduled Orchestrators' : 'Event Workers';
+      return (
+        <section class="mb-8">
+          <h2 class="text-xs uppercase tracking-wider text-[var(--text-dimmed)] font-medium mb-3">{heading}</h2>
+          <div class="grid grid-cols-12 gap-3 px-4 py-2 text-[11px] uppercase tracking-wider text-[var(--text-dimmed)] font-medium">
+            <div class="col-span-4">Task</div>
+            <div class="col-span-2">Last</div>
+            <div class="col-span-2">Success</div>
+            <div class="col-span-2">Avg duration</div>
+            <div class="col-span-1">Spend</div>
+            <div class="col-span-1 text-right">Last run</div>
+          </div>
+          <div class="space-y-2">
+            {sectionTasks.map((task) => {
+              const stats = statsForTask(runs, task.id);
+              return <TaskRow task={task} stats={stats} />;
+            })}
+          </div>
+        </section>
+      );
+    })}
+
+    <footer class="mt-12 text-xs text-[var(--text-dimmed)] flex justify-between">
+      <span>Dashboard reads live from <a href="https://cloud.trigger.dev" class="underline">cloud.trigger.dev</a></span>
+      <span>Reels Intelligence · {new Date().toISOString().slice(0, 10)}</span>
+    </footer>
+  </div>
+</body>
+</html>

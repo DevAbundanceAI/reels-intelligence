@@ -1,0 +1,19 @@
+---
+import StatusPill from './StatusPill.astro';
+import { formatRelative, formatDuration, formatCost } from '../lib/aggregate';
+import type { TriggerRun } from '../lib/trigger';
+
+interface Props {
+  run: TriggerRun;
+}
+const { run } = Astro.props;
+const cost = ((run.costInCents ?? 0) + (run.baseCostInCents ?? 0)) / 100;
+---
+
+<div class="grid grid-cols-12 gap-3 items-center px-3 py-2 border-b border-[var(--border)] text-[13px] tabular-nums">
+  <div class="col-span-3 font-mono text-xs text-[var(--text-dimmed)] truncate" title={run.id}>{run.id.slice(-12)}</div>
+  <div class="col-span-2"><StatusPill status={run.status} /></div>
+  <div class="col-span-2 text-[var(--text-dimmed)]">{formatDuration(run.durationMs ?? 0)}</div>
+  <div class="col-span-2 text-[var(--text-dimmed)]">{formatCost(cost)}</div>
+  <div class="col-span-3 text-[var(--text-dimmed)] text-right" title={run.finishedAt ?? run.updatedAt ?? ''}>{formatRelative(run.finishedAt ?? run.updatedAt ?? null)}</div>
+</div>

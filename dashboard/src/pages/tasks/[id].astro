@@ -1,0 +1,183 @@
+---
+import '../../styles/global.css';
+import { env } from '../../lib/env';
+import { TriggerClient, type TriggerRun, type TriggerRunDetail } from '../../lib/trigger';
+import { AirtableClient, filters, dateFieldFor } from '../../lib/airtable';
+import { getTask, TASKS } from '../../lib/tasks';
+import { statsForTask, formatCost, formatDuration, formatRelative } from '../../lib/aggregate';
+import StatCard from '../../components/StatCard.astro';
+import StatusPill from '../../components/StatusPill.astro';
+import RunRow from '../../components/RunRow.astro';
+import ErrorPanel from '../../components/ErrorPanel.astro';
+
+export const prerender = false;
+
+const { id } = Astro.params;
+const task = id ? getTask(id) : undefined;
+if (!task) {
+  return new Response('Task not found', { status: 404 });
+}
+
+const secret = env('TRIGGER_SECRET_KEY');
+const atKey  = env('AIRTABLE_API_KEY');
+const atBase = env('AIRTABLE_BASE_ID');
+
+let runs: TriggerRun[] = [];
+let latestDetail: TriggerRunDetail | null = null;
+let outputCounts: { table: string; count: number }[] = [];
+let error: string | null = null;
+
+if (!secret) {
+  error = 'Missing TRIGGER_SECRET_KEY.';
+} else {
+  try {
+    const client = new TriggerClient(secret);
+    // Pull more rows here so we can show the last 20 just for this task.
+    const all = await client.listRuns(100);
+    runs = all.filter((r) => r.taskIdentifier === task.id);
+
+    // Latest run → fetch full detail for the error/payload/output panels.
+    if (runs.length > 0) {
+      latestDetail = await client.getRun(runs[0].id);
+    }
+  } catch (e) {
+    error = (e as Error).message;
+  }
+}
+
+// Output history per linked Airtable table — Today, Last 7 days, Last 30 days.
+// Airtable holds ALL historical records; Trigger.dev's runs API only shows
+// the most recent ~25. So this is where you actually see "previous data".
+interface OutputBucket { table: string; today: number; last7d: number; last30d: number; }
+let outputBuckets: OutputBucket[] = [];
+if (atKey && atBase && task.outputs.length > 0) {
+  const at = new AirtableClient(atKey, atBase);
+  const results = await Promise.allSettled(
+    task.outputs.map(async (tableName): Promise<OutputBucket> => {
+      const dateField = dateFieldFor(tableName);
+      const [today, last7d, last30d] = await Promise.all([
+        at.countRecords(tableName, { filterByFormula: filters.todayUTC(dateField), cap: 200 }),
+        at.countRecords(tableName, { filterByFormula: filters.lastNDaysUTC(dateField, 7), cap: 500 }),
+        at.countRecords(tableName, { filterByFormula: filters.lastNDaysUTC(dateField, 30), cap: 2000 }),
+      ]);
+      return { table: tableName, today, last7d, last30d };
+    }),
+  );
+  outputBuckets = results
+    .map((r) => (r.status === 'fulfilled' ? r.value : null))
+    .filter((x): x is OutputBucket => x !== null);
+  // Back-compat for any code still reading outputCounts
+  outputCounts = outputBuckets.map((b) => ({ table: b.table, count: b.today }));
+}
+
+const stats = statsForTask(runs, task.id);
+const recent = runs.slice(0, 20);
+---
+
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{task.label} · Reels Intelligence Ops</title>
+</head>
+<body class="min-h-screen">
+  <div class="max-w-6xl mx-auto px-6 py-8">
+    <nav class="mb-4 text-xs">
+      <a href="/" class="text-[var(--text-dimmed)] hover:text-[var(--ink)]">← Back to ops</a>
+    </nav>
+
+    <header class="mb-6 flex items-start justify-between gap-6">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight">{task.label}</h1>
+        <p class="text-sm text-[var(--text-dimmed)] mt-1 font-mono">{task.id}</p>
+        <p class="text-sm text-[var(--text-dimmed)] mt-2 max-w-xl">{task.description}</p>
+        {task.schedule ? <p class="text-xs text-[var(--text-dimmed)] mt-1">Cron: <code>{task.schedule}</code></p> : null}
+      </div>
+      <StatusPill status={stats.lastRunStatus} />
+    </header>
+
+    {error ? (
+      <div class="bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-800 mb-6">
+        <strong>Failed to load runs.</strong> {error}
+      </div>
+    ) : null}
+
+    <section class="grid grid-cols-4 gap-4 mb-8">
+      <StatCard label="Runs visible" value={String(stats.total)} />
+      <StatCard
+        label="Success rate"
+        value={stats.total === 0 ? '—' : `${stats.successRate}%`}
+        sublabel={`${stats.succeeded} ok · ${stats.failed} failed`}
+        tone={stats.total === 0 ? 'default' : stats.successRate >= 95 ? 'success' : stats.successRate >= 70 ? 'warning' : 'danger'}
+      />
+      <StatCard label="Avg duration" value={formatDuration(stats.avgDurationMs)} />
+      <StatCard label="Total spend" value={formatCost(stats.totalCostUsd)} />
+    </section>
+
+    {latestDetail?.error?.message ? (
+      <section class="mb-6">
+        <h2 class="text-xs uppercase tracking-wider text-[var(--text-dimmed)] font-medium mb-2">Latest failure</h2>
+        <ErrorPanel message={latestDetail.error.message} stack={latestDetail.error.stackTrace} />
+      </section>
+    ) : null}
+
+    {outputBuckets.length > 0 ? (
+      <section class="mb-8">
+        <h2 class="text-xs uppercase tracking-wider text-[var(--text-dimmed)] font-medium mb-3">
+          Airtable output history <span class="normal-case font-normal text-[var(--text-dimmed)]">(UTC) — Airtable holds the full history; Trigger.dev only exposes last ~25 runs</span>
+        </h2>
+        <div class="bg-white border border-[var(--border)] rounded-lg overflow-hidden">
+          <div class="grid grid-cols-5 gap-3 px-4 py-2 text-[11px] uppercase tracking-wider text-[var(--text-dimmed)] font-medium border-b border-[var(--border)]">
+            <div class="col-span-2">Table</div>
+            <div class="text-right">Today</div>
+            <div class="text-right">Last 7d</div>
+            <div class="text-right">Last 30d</div>
+          </div>
+          {outputBuckets.map(({ table, today, last7d, last30d }) => (
+            <div class="grid grid-cols-5 gap-3 px-4 py-3 border-b border-[var(--border)] text-[13px] last:border-b-0">
+              <div class="col-span-2 font-medium text-[var(--ink)]">{table}</div>
+              <div class="text-right tabular-nums">{today}</div>
+              <div class="text-right tabular-nums">{last7d}</div>
+              <div class="text-right tabular-nums">{last30d}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+    ) : null}
+
+    <section class="mb-8">
+      <h2 class="text-xs uppercase tracking-wider text-[var(--text-dimmed)] font-medium mb-3">Recent runs (last 20)</h2>
+      {recent.length === 0 ? (
+        <div class="text-sm text-[var(--text-dimmed)] py-6">No runs in the last 100 events for this task.</div>
+      ) : (
+        <div class="bg-white border border-[var(--border)] rounded-lg overflow-hidden">
+          <div class="grid grid-cols-12 gap-3 px-3 py-2 text-[11px] uppercase tracking-wider text-[var(--text-dimmed)] font-medium border-b border-[var(--border)]">
+            <div class="col-span-3">Run ID</div>
+            <div class="col-span-2">Status</div>
+            <div class="col-span-2">Duration</div>
+            <div class="col-span-2">Cost</div>
+            <div class="col-span-3 text-right">Finished</div>
+          </div>
+          {recent.map((run) => <RunRow run={run} />)}
+        </div>
+      )}
+    </section>
+
+    {latestDetail ? (
+      <section class="mb-8">
+        <h2 class="text-xs uppercase tracking-wider text-[var(--text-dimmed)] font-medium mb-3">Latest run payload / output</h2>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-white border border-[var(--border)] rounded-lg p-3">
+            <div class="text-xs text-[var(--text-dimmed)] mb-2">Payload</div>
+            <pre class="text-[11px] font-mono whitespace-pre-wrap break-words text-[var(--ink)] max-h-72 overflow-auto">{JSON.stringify(latestDetail.payload ?? {}, null, 2)}</pre>
+          </div>
+          <div class="bg-white border border-[var(--border)] rounded-lg p-3">
+            <div class="text-xs text-[var(--text-dimmed)] mb-2">Output</div>
+            <pre class="text-[11px] font-mono whitespace-pre-wrap break-words text-[var(--ink)] max-h-72 overflow-auto">{JSON.stringify(latestDetail.output ?? {}, null, 2)}</pre>
+          </div>
+        </div>
+      </section>
+    ) : null}
+  </div>
+</body>
+</html>

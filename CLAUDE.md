@@ -14,6 +14,10 @@ deep reports that are aligned to the brand — not generic.
 > on each client's Brand DNA base feeds an upstream Brand DNA generator
 > (separate system). See `BRAND_DNA_BASE_ID` in `.env`.
 
+> **Ops dashboard** lives in [`dashboard/`](dashboard/CLAUDE.md). Astro + TS +
+> Tailwind v4 on Cloudflare Pages. Aggregates Trigger.dev run telemetry +
+> Airtable output counts. Read-only.
+
 ## Tools in Use
 - **Claude Code** — the primary interface for ALL development, setup, debugging, and research
 - **Airtable MCP** — connected inside Claude Code for schema setup, querying, and research sessions

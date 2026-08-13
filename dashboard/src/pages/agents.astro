@@ -1,0 +1,199 @@
+---
+import '../styles/global.css';
+import { env } from '../lib/env';
+import { TriggerClient, type TriggerRun, type TriggerSchedule } from '../lib/trigger';
+import { AirtableClient, filters, dateFieldFor } from '../lib/airtable';
+import { TASKS, TASKS_BY_KIND, type TaskDef } from '../lib/tasks';
+import { statsForTask, statsAcrossAll, failingTaskIds, formatRelative } from '../lib/aggregate';
+import AgentCard from '../components/AgentCard.astro';
+
+export const prerender = false;
+
+const secret = env('TRIGGER_SECRET_KEY');
+const atKey = env('AIRTABLE_API_KEY');
+const atBase = env('AIRTABLE_BASE_ID');
+
+let runs: TriggerRun[] = [];
+let schedules: TriggerSchedule[] = [];
+let error: string | null = null;
+
+if (!secret) {
+  error = 'Missing TRIGGER_SECRET_KEY. Set it in .env (local) or Cloudflare Pages env (prod).';
+} else {
+  try {
+    const client = new TriggerClient(secret);
+    [runs, schedules] = await Promise.all([
+      client.listRuns(50),
+      client.listSchedules().catch(() => []),
+    ]);
+  } catch (e) {
+    error = (e as Error).message;
+  }
+}
+
+// Airtable counts for tasks that write to tables. One bucket per task, summed
+// across all of its output tables. Parallel + capped so we stay inside the
+// 50-subrequest Workers budget even with 10 cards on screen.
+type OutputBucket = { today: number; last7d: number; last30d: number };
+const outputsByTask = new Map<string, OutputBucket>();
+if (atKey && atBase) {
+  const at = new AirtableClient(atKey, atBase);
+  const tasksWithOutputs = TASKS.filter((t) => t.outputs.length > 0);
+  const buckets = await Promise.all(
+    tasksWithOutputs.map(async (task): Promise<[string, OutputBucket]> => {
+      const perTable = await Promise.allSettled(
+        task.outputs.map(async (tableName) => {
+          const f = dateFieldFor(tableName);
+          const [today, last7d, last30d] = await Promise.all([
+            at.countRecords(tableName, { filterByFormula: filters.todayUTC(f), cap: 100 }),
+            at.countRecords(tableName, { filterByFormula: filters.lastNDaysUTC(f, 7), cap: 300 }),
+            at.countRecords(tableName, { filterByFormula: filters.lastNDaysUTC(f, 30), cap: 1000 }),
+          ]);
+          return { today, last7d, last30d };
+        }),
+      );
+      const agg: OutputBucket = { today: 0, last7d: 0, last30d: 0 };
+      for (const r of perTable) {
+        if (r.status === 'fulfilled') {
+          agg.today += r.value.today;
+          agg.last7d += r.value.last7d;
+          agg.last30d += r.value.last30d;
+        }
+      }
+      return [task.id, agg];
+    }),
+  );
+  for (const [id, b] of buckets) outputsByTask.set(id, b);
+}
+
+const stats24h = statsAcrossAll(runs);
+const failingIds = failingTaskIds(runs, TASKS.map((t) => t.id));
+const scheduleById = new Map(schedules.map((s) => [s.task, s]));
+
+// Per-task derivation: state + a short "current task" sentence + a progress %.
+// Kept inline here rather than in lib/ because it's view-shaping logic, not
+// reusable analytics.
+function derive(task: TaskDef): { state: 'running' | 'idle' | 'failed' | 'down'; currentTask: string; progress: number } {
+  const stats = statsForTask(runs, task.id);
+  const latest = runs.find((r) => r.taskIdentifier === task.id) ?? null;
+  const sched = scheduleById.get(task.id);
+
+  // Live runs always win — show what it's working on.
+  if (stats.running > 0) {
+    return { state: 'running', currentTask: `Processing run ${latest?.id?.slice(-8) ?? ''}`, progress: 60 };
+  }
+
+  const lastFailed = stats.lastRunStatus === 'FAILED';
+  const baseState: 'idle' | 'failed' = lastFailed ? 'failed' : 'idle';
+
+  // Cron + orchestrators with no runs AND no schedule visible → nothing to say.
+  // (Workers fall through to their own branch since they're never scheduled.)
+  if (task.kind !== 'worker' && stats.total === 0 && !sched) {
+    return { state: 'down', currentTask: 'No runs in the last 50 events', progress: 0 };
+  }
+
+  if (task.kind === 'cron') {
+    // For 15-min crons we compute % through the interval since the last actual run.
+    const lastMs = stats.lastRunAt ? new Date(stats.lastRunAt).getTime() : null;
+    const intervalMs = task.schedule === '*/15 * * * *' ? 15 * 60_000 : 60 * 60_000;
+    const sinceMs = lastMs ? Date.now() - lastMs : intervalMs;
+    const pct = Math.max(2, Math.min(100, (sinceMs / intervalMs) * 100));
+    const mins = Math.max(0, Math.round((intervalMs - sinceMs) / 60_000));
+    const current = lastFailed
+      ? 'Last poll failed — retrying on next tick'
+      : `Next poll in ${mins}m · polls every ${Math.round(intervalMs / 60_000)} min`;
+    return { state: baseState, currentTask: current, progress: pct };
+  }
+
+  if (task.kind === 'orchestrator') {
+    // Orchestrators fire on a sparse schedule (daily or bi-weekly). The
+    // progress bar shows how long ago the last fire was, capped to the period.
+    const periodMs = task.schedule?.includes('1,15') ? 14 * 24 * 60 * 60_000 : 24 * 60 * 60_000;
+    const lastMs = stats.lastRunAt ? new Date(stats.lastRunAt).getTime() : null;
+    const sinceMs = lastMs ? Date.now() - lastMs : periodMs;
+    const pct = Math.max(2, Math.min(100, (sinceMs / periodMs) * 100));
+    const cadence = task.schedule?.includes('1,15') ? 'Bi-weekly' : 'Daily';
+    const nextLabel = sched?.nextRun ? formatRelative(sched.nextRun) : null;
+    const current = lastFailed
+      ? `Last ${cadence.toLowerCase()} fire failed — fix before next run`
+      : `${cadence} fan-out · next fire ${nextLabel ?? 'scheduled'}`;
+    return { state: baseState, currentTask: current, progress: pct };
+  }
+
+  // Worker: event-triggered. The 50-run rolling window is dominated by crons,
+  // so most workers have no runs visible here. Fall back to Airtable output
+  // counts (computed below) to tell whether the worker is actually alive.
+  const outputs = outputsByTask.get(task.id);
+  const recentlyActive = (outputs?.last7d ?? 0) > 0;
+  const workerState: 'idle' | 'failed' | 'down' = lastFailed
+    ? 'failed'
+    : latest || recentlyActive
+      ? 'idle'
+      : 'down';
+  const current = lastFailed
+    ? `Last run failed · ${formatRelative(stats.lastRunAt)}`
+    : latest
+      ? `Awaiting trigger · last ran ${formatRelative(stats.lastRunAt)}`
+      : recentlyActive
+        ? `Active · ${outputs?.last7d ?? 0} outputs in last 7d`
+        : 'Awaiting trigger · no recent activity';
+  // Progress for workers = success rate when we have runs, otherwise a tiny
+  // baseline so the bar isn't empty for an actively-producing worker.
+  const progress = stats.successRate || (recentlyActive ? 100 : 2);
+  return { state: workerState, currentTask: current, progress };
+}
+---
+
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Reels Intelligence · Agents</title>
+</head>
+<body class="min-h-screen">
+  <div class="max-w-7xl mx-auto px-6 py-8">
+    <header class="mb-8 flex items-baseline justify-between">
+      <div>
+        <p class="text-[11px] uppercase tracking-wider text-[var(--text-dimmed)] font-medium mb-1">Agent Overview</p>
+        <h1 class="text-3xl font-bold tracking-tight">{TASKS.length} Agents. <span class="gradient-text">Always On.</span></h1>
+      </div>
+      <div class="flex items-center gap-3 text-xs">
+        <a href="/" class="text-[var(--text-dimmed)] hover:text-[var(--ink)] underline-offset-4 hover:underline">Ops view →</a>
+        <span class="flex items-center gap-1.5 text-[var(--text-dimmed)]">
+          <span class={`w-1.5 h-1.5 rounded-full ${failingIds.length === 0 ? 'bg-emerald-500' : 'bg-red-500'}`}></span>
+          {failingIds.length === 0 ? `All ${TASKS.length} agents healthy` : `${failingIds.length} failing`}
+        </span>
+      </div>
+    </header>
+
+    {error ? (
+      <div class="bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-800 mb-6">
+        <strong>Failed to load runs.</strong> {error}
+      </div>
+    ) : null}
+
+    {(['cron', 'orchestrator', 'worker'] as const).map((kind) => {
+      const sectionTasks = TASKS_BY_KIND[kind];
+      const heading = kind === 'cron' ? 'Watchers — Polling Every 15 Min' : kind === 'orchestrator' ? 'Orchestrators — Scheduled Fan-Outs' : 'Workers — Event-Triggered';
+      return (
+        <section class="mb-10">
+          <h2 class="text-[11px] uppercase tracking-wider text-[var(--text-dimmed)] font-medium mb-4">{heading}</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {sectionTasks.map((task) => {
+              const stats = statsForTask(runs, task.id);
+              const { state, currentTask, progress } = derive(task);
+              const outputs = outputsByTask.get(task.id) ?? null;
+              return <AgentCard task={task} stats={stats} outputs={outputs} currentTask={currentTask} progress={progress} state={state} />;
+            })}
+          </div>
+        </section>
+      );
+    })}
+
+    <footer class="mt-12 text-xs text-[var(--text-dimmed)] flex justify-between">
+      <span>{runs.length} runs visible · {stats24h.successRate}% success rate · click any agent for run history</span>
+      <span>Reels Intelligence · {new Date().toISOString().slice(0, 10)}</span>
+    </footer>
+  </div>
+</body>
+</html>

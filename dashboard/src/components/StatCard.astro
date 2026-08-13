@@ -1,0 +1,22 @@
+---
+interface Props {
+  label: string;
+  value: string;
+  sublabel?: string;
+  tone?: 'default' | 'success' | 'warning' | 'danger';
+}
+const { label, value, sublabel, tone = 'default' } = Astro.props;
+
+const toneClass: Record<NonNullable<Props['tone']>, string> = {
+  default: 'text-[var(--ink)]',
+  success: 'text-emerald-600',
+  warning: 'text-amber-600',
+  danger:  'text-red-600',
+};
+---
+
+<div class="bg-white border border-[var(--border)] rounded-xl p-5">
+  <div class="text-xs uppercase tracking-wider text-[var(--text-dimmed)] font-medium">{label}</div>
+  <div class={`mt-2 text-3xl font-bold tabular-nums ${toneClass[tone]}`}>{value}</div>
+  {sublabel ? <div class="mt-1 text-xs text-[var(--text-dimmed)]">{sublabel}</div> : null}
+</div>

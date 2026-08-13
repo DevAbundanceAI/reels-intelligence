@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+/* Brand design tokens — pulled from acquisition-network/website/src/pages/brand.html */
+:root {
+  --ink: #141414;
+  --text-dimmed: #6b7280;
+  --bg: #fafafa;
+  --bg-card: #ffffff;
+  --border: #e5e7eb;
+  --accent-start: #3b82f6;
+  --accent-end: #8b5cf6;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+}
+
+html,
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-feature-settings: 'cv11', 'ss01';
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--accent-start), var(--accent-end));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.pill-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.pill-success { background: #d1fae5; color: #065f46; }
+.pill-failed  { background: #fee2e2; color: #991b1b; }
+.pill-running { background: #dbeafe; color: #1e40af; }
+.pill-queued  { background: #f3f4f6; color: #4b5563; }

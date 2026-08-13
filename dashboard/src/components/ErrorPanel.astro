@@ -1,0 +1,17 @@
+---
+interface Props {
+  message?: string;
+  stack?: string;
+}
+const { message, stack } = Astro.props;
+if (!message) return null;
+---
+
+<details class="bg-red-50 border border-red-200 rounded-lg p-3 text-[13px]">
+  <summary class="font-semibold text-red-800 cursor-pointer">
+    {message.length > 200 ? message.slice(0, 200) + '…' : message}
+  </summary>
+  {stack ? (
+    <pre class="mt-3 text-[11px] text-red-700 whitespace-pre-wrap break-words font-mono">{stack}</pre>
+  ) : null}
+</details>

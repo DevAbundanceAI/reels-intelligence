@@ -1,0 +1,112 @@
+---
+import type { TaskDef } from '../lib/tasks';
+import type { TaskStats } from '../lib/aggregate';
+import { formatCost, formatDuration, formatRelative } from '../lib/aggregate';
+
+interface Props {
+  task: TaskDef;
+  stats: TaskStats;
+  /** Total Airtable records written across this task's output tables. */
+  outputs?: { today: number; last7d: number; last30d: number } | null;
+  /** Human-readable string describing what's happening now. */
+  currentTask: string;
+  /** Progress 0–100 to show on the bar (e.g. % through cron interval). */
+  progress: number;
+  /** Status tier — drives the pill color and accent dot. */
+  state: 'running' | 'idle' | 'failed' | 'down';
+}
+
+const { task, stats, outputs, currentTask, progress, state } = Astro.props;
+
+const stateLabel: Record<Props['state'], string> = {
+  running: 'RUNNING',
+  idle: 'IDLE',
+  failed: 'FAILED',
+  down: 'NO DATA',
+};
+const stateDotClass: Record<Props['state'], string> = {
+  running: 'bg-blue-500',
+  idle: 'bg-emerald-500',
+  failed: 'bg-red-500',
+  down: 'bg-gray-400',
+};
+const statePillClass: Record<Props['state'], string> = {
+  running: 'pill-running',
+  idle: 'pill-success',
+  failed: 'pill-failed',
+  down: 'pill-queued',
+};
+
+const initial = task.persona.charAt(0).toUpperCase();
+const today = outputs?.today ?? 0;
+const last7d = outputs?.last7d ?? 0;
+const last30d = outputs?.last30d ?? 0;
+const hasOutputs = task.outputs.length > 0;
+---
+
+<a href={`/tasks/${task.id}`} class="block bg-white border border-[var(--border)] rounded-xl p-5 hover:border-[var(--accent-start)] transition-colors">
+  <div class="flex items-start gap-3 mb-3">
+    <div class="w-10 h-10 rounded-lg bg-[var(--ink)] text-white flex items-center justify-center font-bold">
+      {initial}
+    </div>
+    <div class="flex-1 min-w-0">
+      <div class="flex items-center gap-2">
+        <span class="font-semibold text-[var(--ink)]">{task.persona}</span>
+        <span class={`pill-status ${statePillClass[state]}`}>
+          <span class={`w-1.5 h-1.5 rounded-full ${stateDotClass[state]}`}></span>
+          {stateLabel[state]}
+        </span>
+      </div>
+      <div class="text-xs text-[var(--text-dimmed)] mt-0.5">{task.role}</div>
+    </div>
+  </div>
+
+  <p class="text-[13px] text-[var(--text-dimmed)] mb-4 leading-snug">{task.description}</p>
+
+  <div class="mb-4">
+    <div class="text-[10px] uppercase tracking-wider text-[var(--text-dimmed)] mb-1.5 font-medium">Current task</div>
+    <div class="text-[13px] text-[var(--ink)] mb-2 truncate" title={currentTask}>{currentTask}</div>
+    <div class="h-1.5 bg-[var(--bg)] rounded-full overflow-hidden">
+      <div
+        class="h-full rounded-full"
+        style={`width: ${Math.max(2, Math.min(100, progress))}%; background: linear-gradient(90deg, var(--accent-start), var(--accent-end));`}
+      ></div>
+    </div>
+    <div class="text-[11px] text-[var(--text-dimmed)] mt-1 text-right tabular-nums">{Math.round(progress)}%</div>
+  </div>
+
+  <div class="grid grid-cols-3 gap-2 mb-4">
+    <div class="bg-[var(--bg)] rounded-lg py-2 text-center">
+      <div class="text-lg font-bold text-[var(--ink)] tabular-nums">{today}</div>
+      <div class="text-[10px] text-[var(--text-dimmed)] uppercase tracking-wider">Today</div>
+    </div>
+    <div class="bg-[var(--bg)] rounded-lg py-2 text-center">
+      <div class="text-lg font-bold text-[var(--ink)] tabular-nums">{last7d}</div>
+      <div class="text-[10px] text-[var(--text-dimmed)] uppercase tracking-wider">This Week</div>
+    </div>
+    <div class="bg-[var(--bg)] rounded-lg py-2 text-center">
+      <div class="text-lg font-bold text-[var(--ink)] tabular-nums">{last30d}</div>
+      <div class="text-[10px] text-[var(--text-dimmed)] uppercase tracking-wider">This Month</div>
+    </div>
+  </div>
+
+  <div class="space-y-1.5 text-[12px] mb-3">
+    <div class="flex justify-between">
+      <span class="text-[var(--text-dimmed)]">{hasOutputs ? 'Outputs' : 'Runs visible'}</span>
+      <span class="font-medium tabular-nums">{hasOutputs ? task.outputs.join(' · ') : stats.total}</span>
+    </div>
+    <div class="flex justify-between">
+      <span class="text-[var(--text-dimmed)]">Avg duration</span>
+      <span class="font-medium tabular-nums">{formatDuration(stats.avgDurationMs)}</span>
+    </div>
+    <div class="flex justify-between">
+      <span class="text-[var(--text-dimmed)]">Spend</span>
+      <span class="font-medium tabular-nums">{formatCost(stats.totalCostUsd)}</span>
+    </div>
+  </div>
+
+  <div class="flex justify-between items-center text-[11px] text-[var(--text-dimmed)] pt-3 border-t border-[var(--border)]">
+    <span>Uptime: <span class="font-medium text-[var(--ink)] tabular-nums">{stats.total === 0 ? '—' : `${stats.successRate}%`}</span></span>
+    <span>Last run: <span class="font-medium text-[var(--ink)]">{formatRelative(stats.lastRunAt)}</span></span>
+  </div>
+</a>

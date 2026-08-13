@@ -1,0 +1,27 @@
+---
+import StatusPill from './StatusPill.astro';
+import { formatRelative, formatDuration, formatCost, type TaskStats } from '../lib/aggregate';
+import type { TaskDef } from '../lib/tasks';
+
+interface Props {
+  task: TaskDef;
+  stats: TaskStats;
+}
+const { task, stats } = Astro.props;
+---
+
+<a href={`/tasks/${task.id}`}
+   class="grid grid-cols-12 gap-3 items-center px-4 py-3 bg-white border border-[var(--border)] rounded-lg hover:border-[var(--ink)] transition-colors text-[13px]">
+  <div class="col-span-4">
+    <div class="font-semibold text-[var(--ink)]">{task.label}</div>
+    <div class="text-xs text-[var(--text-dimmed)] mt-0.5">{task.id}{task.schedule ? ` · ${task.schedule}` : ''}</div>
+  </div>
+  <div class="col-span-2"><StatusPill status={stats.lastRunStatus} /></div>
+  <div class="col-span-2 tabular-nums">
+    <div class="text-[var(--ink)] font-medium">{stats.total === 0 ? '—' : `${stats.successRate}%`}</div>
+    <div class="text-xs text-[var(--text-dimmed)]">{stats.total} runs</div>
+  </div>
+  <div class="col-span-2 tabular-nums text-[var(--text-dimmed)]">{formatDuration(stats.avgDurationMs)} avg</div>
+  <div class="col-span-1 tabular-nums text-[var(--text-dimmed)]">{formatCost(stats.totalCostUsd)}</div>
+  <div class="col-span-1 tabular-nums text-[var(--text-dimmed)] text-right">{formatRelative(stats.lastRunAt)}</div>
+</a>

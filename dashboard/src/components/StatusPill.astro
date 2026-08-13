@@ -1,0 +1,23 @@
+---
+interface Props {
+  status: string | null;
+}
+const { status } = Astro.props;
+const s = (status ?? 'NEVER').toUpperCase();
+
+const pillClass =
+  s === 'COMPLETED' ? 'pill-success' :
+  s === 'FAILED'    ? 'pill-failed'  :
+  s === 'EXECUTING' ? 'pill-running' :
+  s === 'QUEUED'    ? 'pill-queued'  :
+  'pill-queued';
+
+const label =
+  s === 'COMPLETED' ? 'OK'   :
+  s === 'FAILED'    ? 'FAIL' :
+  s === 'EXECUTING' ? 'RUNNING' :
+  s === 'QUEUED'    ? 'QUEUED' :
+  s === 'NEVER'     ? 'NO RUNS' : s;
+---
+
+<span class={`pill-status ${pillClass}`}>{label}</span>
