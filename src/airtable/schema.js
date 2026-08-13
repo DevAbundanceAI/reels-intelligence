@@ -331,6 +331,9 @@ export const CONTENT_CALENDAR_FIELDS = {
   actualLikes:     'Actual Likes',      // Number precision:0
   actualEngScore:  'Actual Eng Score',  // Number precision:4
 
+  // Review
+  preview:         'Preview',           // multipleAttachments — rendered slides from content-engine
+
   // Meta
   createdAt:       'Created At',        // Date
   notes:           'Notes',             // Long text
