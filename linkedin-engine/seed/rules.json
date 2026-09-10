@@ -1,0 +1,424 @@
+[
+  {
+    "rule": "No em or en dashes",
+    "type": "Voice Rule",
+    "detail": "Never write an em dash or an en dash anywhere in generated copy. Use a comma, a period, or a normal hyphen instead. This is a hard brand rule that also flags AI-written copy.",
+    "appliesTo": "Both",
+    "enforcedBy": "Both",
+    "example": "Bad: the system works, but only every time (written with a dash in the original). Good: the system works, every time.",
+    "sort": 1
+  },
+  {
+    "rule": "First person, my team for delivery",
+    "type": "Voice Rule",
+    "detail": "Write as Ryan in first person (\"I\"). Use \"my team and I\" when describing delivery work, never \"we\" alone and never \"me and my partners.\"",
+    "appliesTo": "Both",
+    "enforcedBy": "Prompt",
+    "example": "Good: my team and I built the funnel from scratch.",
+    "sort": 2
+  },
+  {
+    "rule": "No fragment-stack sentences",
+    "type": "Voice Rule",
+    "detail": "Do not write three or more short punchy sentences in a row (\"More funnels. More targeted. Higher conversion.\"). Use cause-effect chains instead: \"the more X you build, the higher Y climbs.\"",
+    "appliesTo": "Both",
+    "enforcedBy": "Both",
+    "example": "Bad: More leads. More calls. More revenue. Good: the more qualified leads land in the pipeline, the more calls get booked, and revenue follows.",
+    "sort": 3
+  },
+  {
+    "rule": "No clever couplets",
+    "type": "Voice Rule",
+    "detail": "If a line sounds quotable, it sounds written. Avoid paired contrasts like \"an audit, not an ambush\" or \"not in a PDF.\" Say the plain thing.",
+    "appliesTo": "Both",
+    "enforcedBy": "Prompt",
+    "example": "Bad: an audit, not an ambush. Good: we look at what is actually happening before we recommend anything.",
+    "sort": 4
+  },
+  {
+    "rule": "No stamp endings",
+    "type": "Voice Rule",
+    "detail": "Do not close a paragraph or section with a clipped payoff stamp (\"That's marketing. More money in.\"). Wrap and bridge instead, or end on a full sentence that ties back to the opening.",
+    "appliesTo": "Both",
+    "enforcedBy": "Prompt",
+    "example": "Bad: More money coming in. Not more spend. Good: that is the difference between spending on marketing and installing a system that pays you back.",
+    "sort": 5
+  },
+  {
+    "rule": "No orphan referents",
+    "type": "Voice Rule",
+    "detail": "Every pronoun needs its noun within earshot. Never write \"you keep all three anyway\" without having just named the three things.",
+    "appliesTo": "Both",
+    "enforcedBy": "Prompt",
+    "sort": 6
+  },
+  {
+    "rule": "No trailing modifiers",
+    "type": "Voice Rule",
+    "detail": "Do not tack a dangling qualifier onto the end of a sentence (\"...and make you more money, starting this quarter\"). Fold the qualifier into the sentence or cut it.",
+    "appliesTo": "Both",
+    "enforcedBy": "Prompt",
+    "sort": 7
+  },
+  {
+    "rule": "No sentence-initial And-chains",
+    "type": "Voice Rule",
+    "detail": "Do not start three or more sentences in one paragraph with \"And\". One is fine as a spoken connector; a chain of them reads as filler.",
+    "appliesTo": "Both",
+    "enforcedBy": "Validator",
+    "sort": 8
+  },
+  {
+    "rule": "No LinkedIn-bro tells",
+    "type": "Voice Rule",
+    "detail": "No one-sentence-per-line walls of text, no \"Let that sink in\", no \"Agree?\", no \"Read that again\", no \"Here's the thing\", no emoji bullets. Ryan's writing reads like plain, direct paragraphs.",
+    "appliesTo": "Both",
+    "enforcedBy": "Both",
+    "sort": 9
+  },
+  {
+    "rule": "No emojis",
+    "type": "Voice Rule",
+    "detail": "Zero emoji anywhere in a post, caption, hashtag, or slide.",
+    "appliesTo": "Both",
+    "enforcedBy": "Prompt",
+    "sort": 10
+  },
+  {
+    "rule": "Durations, not dates",
+    "type": "Voice Rule",
+    "detail": "Never reference a specific year or a month-year string. Use durations instead (\"in 11 months\", \"over two and a half years\"). \"During COVID\" is allowed because it already appears on the live site. Never use relative-time phrasing either (\"last week\", \"this year\") since posts are scheduled weeks in advance.",
+    "appliesTo": "Both",
+    "enforcedBy": "Both",
+    "example": "Bad: back in 2024 we started this. Good: over the past two and a half years, we built this.",
+    "sort": 11
+  },
+  {
+    "rule": "Cause-effect chains, spoken connectors",
+    "type": "Voice Rule",
+    "detail": "Prefer \"which means\", \"so that way\", constructions that link cause to effect. Use spoken connectors like \"And look\", \"Well\", \"Plus\", \"But honestly\" sparingly to open a new beat, not to pad every sentence.",
+    "appliesTo": "Both",
+    "enforcedBy": "Prompt",
+    "sort": 12
+  },
+  {
+    "rule": "Read-aloud test",
+    "type": "Voice Rule",
+    "detail": "Every post must survive being read aloud in Ryan's cadence: short sentences, one longer breath-sentence per paragraph, plain English, no jargon.",
+    "appliesTo": "Both",
+    "enforcedBy": "Prompt",
+    "sort": 13
+  },
+  {
+    "rule": "Modeled empathy",
+    "type": "Voice Rule",
+    "detail": "Get inside the reader's head and echo their actual internal monologue rather than describing them from outside. \"You're reaching for your phone before your feet hit the floor\", not \"founders reach for their phones early.\"",
+    "appliesTo": "Both",
+    "enforcedBy": "Prompt",
+    "sort": 14
+  },
+  {
+    "rule": "Myth-busting cadence",
+    "type": "Voice Rule",
+    "detail": "When correcting a false belief: name the false belief, state the truth plainly, then show the mechanism that makes it true.",
+    "appliesTo": "Both",
+    "enforcedBy": "Prompt",
+    "sort": 15
+  },
+  {
+    "rule": "Banned generic words",
+    "type": "Banned Phrase",
+    "detail": "game-changer, next level, unlock, synergy, leverage (any form, written copy only), in today's world, let's dive in, buckle up, ever-evolving, one weird trick, just imagine",
+    "appliesTo": "Both",
+    "enforcedBy": "Both",
+    "sort": 20
+  },
+  {
+    "rule": "Banned CTA phrases (this batch)",
+    "type": "Banned Phrase",
+    "detail": "DM me, message me, link in, Featured, book a call, comment below, let me know in the comments, apply, see if you qualify, schedule, reply with, follow for, share this. This batch runs with zero CTAs.",
+    "appliesTo": "Both",
+    "enforcedBy": "Both",
+    "sort": 21
+  },
+  {
+    "rule": "Banned pre-pivot offer language",
+    "type": "Banned Phrase",
+    "detail": "Selling System, $7,500, $15K, fifteen thousand, disqualif (any form). These belong to the retired Selling System offer, superseded by the AI Growth Assessment positioning.",
+    "appliesTo": "Both",
+    "enforcedBy": "Both",
+    "sort": 22
+  },
+  {
+    "rule": "Banned competitor and teacher names",
+    "type": "Banned Phrase",
+    "detail": "Liam Evans, MultiplyClients, Kai Bax, ScaleClients, Hims, Hers, Ro, Viktor, Hormozi, Sabri Suby, Cole Gordon, Closers.io. Never name competitors or named teachers, even to contrast against them.",
+    "appliesTo": "Both",
+    "enforcedBy": "Both",
+    "sort": 23
+  },
+  {
+    "rule": "Banned names-gate terms",
+    "type": "Banned Phrase",
+    "detail": "Ahmed, Ryan Morgan, Brian Durkee, Gavin Brooks, Promoting Made Simple, Go Fast Funding, Atif, Manuel, Ciara, Ola, 98%, 111 calls, 143 calls, $16, $20.98, 70 hours, $30K. Any of these tiers the post Needs Ryan OK; do not ship without his sign-off.",
+    "appliesTo": "Both",
+    "enforcedBy": "Both",
+    "sort": 24
+  },
+  {
+    "rule": "Confidential terms, never write",
+    "type": "Banned Phrase",
+    "detail": "Oren, peptide deal, any Expert Health molecule or product name (semaglutide, tirzepatide, retatrutide, BPC-157, CJC-1295, GHK-Cu, TB-500, PT-141, tesamorelin, sermorelin, NAD+, testosterone), any Smart Sellers Academy internal (show rate, CAC, P&L, coaching-call content).",
+    "appliesTo": "Both",
+    "enforcedBy": "Both",
+    "sort": 25
+  },
+  {
+    "rule": "No dollar-per-month figures",
+    "type": "Banned Pattern",
+    "detail": "\\$\\s?\\d[\\d.,]*\\s?[KkMm]?\\s?(/|per|a)\\s?(mo|month)",
+    "appliesTo": "Both",
+    "enforcedBy": "Validator",
+    "sort": 30
+  },
+  {
+    "rule": "No em/en dash characters",
+    "type": "Banned Pattern",
+    "detail": "[\\u2014\\u2013]",
+    "appliesTo": "Both",
+    "enforcedBy": "Validator",
+    "sort": 31
+  },
+  {
+    "rule": "No bare URLs",
+    "type": "Banned Pattern",
+    "detail": "https?://|www\\.",
+    "appliesTo": "Both",
+    "enforcedBy": "Validator",
+    "sort": 32
+  },
+  {
+    "rule": "No specific year",
+    "type": "Banned Pattern",
+    "detail": "\\b(19|20)\\d{2}\\b",
+    "appliesTo": "Both",
+    "enforcedBy": "Validator",
+    "sort": 33
+  },
+  {
+    "rule": "Total revenue and engagements",
+    "type": "Canonical Number",
+    "detail": "$11.5M+ generated across 7 engagements over 6 years, 3 ventures. Ryan's aggregate, on itsryanfrost.com.",
+    "appliesTo": "Both",
+    "enforcedBy": "Both",
+    "sort": 40
+  },
+  {
+    "rule": "Acquisition Network",
+    "type": "Canonical Number",
+    "detail": "$0 to $2.9M, about two years, engagement still active/exited per the live site. Never use $135K/mo (stale, not on the site). Never name Ryan Morgan.",
+    "appliesTo": "Both",
+    "enforcedBy": "Both",
+    "sort": 41
+  },
+  {
+    "rule": "Smart Sellers Academy",
+    "type": "Canonical Number",
+    "detail": "$1.5M, past-tense receipt only. Never $225K/mo. Never present-tense promotion (marketing is frozen).",
+    "appliesTo": "Both",
+    "enforcedBy": "Both",
+    "sort": 42
+  },
+  {
+    "rule": "All Done Consulting",
+    "type": "Canonical Number",
+    "detail": "$4.6M generated over a two and a half year partnership.",
+    "appliesTo": "Both",
+    "enforcedBy": "Both",
+    "sort": 43
+  },
+  {
+    "rule": "Malik Consolidated",
+    "type": "Canonical Number",
+    "detail": "$1.6M generated, about a two-year engagement.",
+    "appliesTo": "Both",
+    "enforcedBy": "Both",
+    "sort": 44
+  },
+  {
+    "rule": "Big Little Gyms",
+    "type": "Canonical Number",
+    "detail": "15 to 189 clients in 11 months, $989K total, 12x growth, during COVID, four coaches hired.",
+    "appliesTo": "Both",
+    "enforcedBy": "Both",
+    "sort": 45
+  },
+  {
+    "rule": "Frosty build facts",
+    "type": "Canonical Number",
+    "detail": "Two non-engineers (Ryan and his business partner), production AI software, under three months, no developers hired. Never a user count or revenue figure.",
+    "appliesTo": "Both",
+    "enforcedBy": "Prompt",
+    "sort": 46
+  },
+  {
+    "rule": "Expert Health process facts",
+    "type": "Canonical Number",
+    "detail": "12 products live, 9 goal categories, compliance-flagged ad copy reviewed before it runs, LegitScript certification gates paid ads (not organic), clean applications clear in weeks. Never a sales, order, or revenue figure.",
+    "appliesTo": "Both",
+    "enforcedBy": "Prompt",
+    "sort": 47
+  },
+  {
+    "rule": "One name per offer thing",
+    "type": "Offer Language",
+    "detail": "AI Growth Assessment (the paid engagement), AI Growth Discovery Call (the free booking), God Mode (the AI coworker foundation), Constraint-First AI Mapping (the method). Use these exact names every time, never a paraphrase.",
+    "appliesTo": "Both",
+    "enforcedBy": "Both",
+    "sort": 50
+  },
+  {
+    "rule": "Price never stated",
+    "type": "Offer Language",
+    "detail": "Never write a number next to any offer, ever, in any form (not even \"a few thousand\" or \"low four figures\"). If price comes up, the post ends the thought without a figure.",
+    "appliesTo": "Both",
+    "enforcedBy": "Both",
+    "sort": 51
+  },
+  {
+    "rule": "Receipts-first hook",
+    "type": "Hook Pattern",
+    "detail": "Lead with the number or the transformation before naming the mechanism. \"15 to 189 clients in 11 months.\"",
+    "appliesTo": "Both",
+    "enforcedBy": "Human",
+    "sort": 60
+  },
+  {
+    "rule": "Confession open",
+    "type": "Hook Pattern",
+    "detail": "Open with a specific, slightly embarrassing moment. \"A founder DM'd me last week asking which course to buy next.\"",
+    "appliesTo": "Both",
+    "enforcedBy": "Human",
+    "sort": 61
+  },
+  {
+    "rule": "Contrarian plain statement",
+    "type": "Hook Pattern",
+    "detail": "State the contrarian claim flatly, no hedging, then earn it in the body. \"Your sales team should be order-takers.\"",
+    "appliesTo": "Both",
+    "enforcedBy": "Human",
+    "sort": 62
+  },
+  {
+    "rule": "Please-don't inversion",
+    "type": "Hook Pattern",
+    "detail": "Open by telling most readers NOT to do the thing, then explain the filter. \"Please don't hire us.\"",
+    "appliesTo": "Both",
+    "enforcedBy": "Human",
+    "sort": 63
+  },
+  {
+    "rule": "Let me guess",
+    "type": "Hook Pattern",
+    "detail": "Open by guessing what the reader has already tried, invite them to stop you when you're wrong.",
+    "appliesTo": "Both",
+    "enforcedBy": "Human",
+    "sort": 64
+  },
+  {
+    "rule": "Hook under mobile fold",
+    "type": "Format Rule",
+    "detail": "The first line (hook) must stand alone and be 140 characters or fewer, matching the mobile see-more cutoff.",
+    "appliesTo": "Both",
+    "enforcedBy": "Validator",
+    "sort": 70
+  },
+  {
+    "rule": "Text post length",
+    "type": "Format Rule",
+    "detail": "600 to 1300 characters total, 3 to 5 short paragraphs, no URLs, ends on a wrap line rather than an ask.",
+    "appliesTo": "Text",
+    "enforcedBy": "Validator",
+    "sort": 71
+  },
+  {
+    "rule": "Carousel caption length",
+    "type": "Format Rule",
+    "detail": "150 to 300 characters, written for curiosity (does not summarize the slides), no URL. The document title is separate and carries the topic.",
+    "appliesTo": "Carousel",
+    "enforcedBy": "Validator",
+    "sort": 72
+  },
+  {
+    "rule": "Carousel slide count and shape",
+    "type": "Format Rule",
+    "detail": "6 to 10 slides. Slide 1 must be type hook. Last slide must be type signoff. Roughly 30 words max per slide, one idea per slide.",
+    "appliesTo": "Carousel",
+    "enforcedBy": "Validator",
+    "sort": 73
+  },
+  {
+    "rule": "No hashtags this batch",
+    "type": "Format Rule",
+    "detail": "Hashtags field stays empty for every post in this batch. If used later, exactly 3, never any other count.",
+    "appliesTo": "Both",
+    "enforcedBy": "Validator",
+    "sort": 74
+  },
+  {
+    "rule": "No CTA this batch",
+    "type": "Format Rule",
+    "detail": "Zero calls to action anywhere: no link, no DM ask, no booking ask, no comment prompt. The signoff slide and text-post wrap line close on the idea, never a sell.",
+    "appliesTo": "Both",
+    "enforcedBy": "Both",
+    "sort": 75
+  },
+  {
+    "rule": "Before/After recipe",
+    "type": "Story Recipe",
+    "detail": "Situation in plain terms, one-sentence diagnosis of what was actually broken, 3-6 concrete things that went in, the total plus duration, then the outcome that mattered more than the number (founder out of the loop, team owns it).",
+    "appliesTo": "Both",
+    "enforcedBy": "Prompt",
+    "sort": 80
+  },
+  {
+    "rule": "Challenge Faced recipe",
+    "type": "Story Recipe",
+    "detail": "The moment it stopped, what we assumed, what was actually true, what we changed, the rule that stayed.",
+    "appliesTo": "Both",
+    "enforcedBy": "Prompt",
+    "sort": 81
+  },
+  {
+    "rule": "Lesson/Correction recipe",
+    "type": "Story Recipe",
+    "detail": "What I said or believed, what I found, the corrected version, why the smaller true thing beats the bigger claim.",
+    "appliesTo": "Both",
+    "enforcedBy": "Prompt",
+    "sort": 82
+  },
+  {
+    "rule": "Framework recipe",
+    "type": "Story Recipe",
+    "detail": "The false belief, the truth in one line, the steps (3-7) each with a why, an order warning, a wrap line.",
+    "appliesTo": "Both",
+    "enforcedBy": "Prompt",
+    "sort": 83
+  },
+  {
+    "rule": "Build Log recipe",
+    "type": "Story Recipe",
+    "detail": "What is being built and for whom, the one decision or rule, what it prevents, what it cost to get right, where it stands honestly (in build, parked, live).",
+    "appliesTo": "Both",
+    "enforcedBy": "Prompt",
+    "sort": 84
+  },
+  {
+    "rule": "Contrarian POV recipe",
+    "type": "Story Recipe",
+    "detail": "The provocative claim, \"I know how that sounds\", the mechanism, the reframe, the condition under which the reader is right.",
+    "appliesTo": "Both",
+    "enforcedBy": "Prompt",
+    "sort": 85
+  }
+]

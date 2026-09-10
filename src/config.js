@@ -120,3 +120,35 @@ export const BRAND_DNA_BASE_ID            = process.env.BRAND_DNA_BASE_ID       
 export const BRAND_DNA_PROFILE_TABLE_ID   = process.env.BRAND_DNA_PROFILE_TABLE_ID   || 'tbl1tkPkABIqyJjrF'; // Brand Profile
 export const BRAND_DNA_VOICE_TABLE_ID     = process.env.BRAND_DNA_VOICE_TABLE_ID     || 'tbl7ZSgUKZFpiI2I6'; // Brand Voice
 export const BRAND_DNA_ICPS_TABLE_ID      = process.env.BRAND_DNA_ICPS_TABLE_ID      || 'tblioaRLaLEQSwQ1x'; // ICPs
+
+// ── LinkedIn Engine (Ryan Frost personal-profile publisher) ────────────────
+// New base, own workspace. Never touches the Reels/Content Calendar tables
+// above. See linkedin-engine/CLAUDE.md for the rules this engine follows.
+export const LINKEDIN_BASE_ID          = process.env.LINKEDIN_BASE_ID          || 'appdbuuWKHcTikOaF';
+export const LINKEDIN_POSTS_TABLE      = process.env.LINKEDIN_POSTS_TABLE      || 'Posts';
+export const LINKEDIN_SOURCES_TABLE    = process.env.LINKEDIN_SOURCES_TABLE    || 'Source Library';
+export const LINKEDIN_RULES_TABLE      = process.env.LINKEDIN_RULES_TABLE      || 'Voice & Rules';
+
+// Claude model for post generation — deliberately NOT the shared CLAUDE_MODEL
+// above (that value is pinned for the reels pipeline and may lag). Defaults
+// to the current top-tier model per the claude-api skill.
+export const LINKEDIN_CLAUDE_MODEL     = process.env.LINKEDIN_CLAUDE_MODEL     || 'claude-opus-5';
+
+// LinkedIn developer app (Share on LinkedIn + Sign In with LinkedIn via OIDC).
+// auth.js only; never used by the Trigger.dev publisher.
+export const LINKEDIN_CLIENT_ID        = process.env.LINKEDIN_CLIENT_ID        || null;
+export const LINKEDIN_CLIENT_SECRET    = process.env.LINKEDIN_CLIENT_SECRET    || null;
+export const LINKEDIN_REDIRECT_URI     = process.env.LINKEDIN_REDIRECT_URI     || 'https://itsryanfrost.com/';
+
+// The member's 60-day access token + identity. No programmatic refresh exists
+// for a non-Marketing-Developer-Platform app — auth.js prints a fresh one
+// every ~60 days; paste it here (and into the Trigger.dev dashboard for prod).
+export const LINKEDIN_ACCESS_TOKEN     = process.env.LINKEDIN_ACCESS_TOKEN     || null;
+export const LINKEDIN_PERSON_URN       = process.env.LINKEDIN_PERSON_URN       || null;
+export const LINKEDIN_TOKEN_EXPIRES_AT = process.env.LINKEDIN_TOKEN_EXPIRES_AT || null;
+export const LINKEDIN_API_VERSION      = process.env.LINKEDIN_API_VERSION      || '202609';
+
+// Auto = the Trigger.dev runner publishes carousels itself via the Documents
+// API. Flip to Manual (no redeploy needed, just re-export/redeploy env) if
+// that path fails testing — Atif then posts the 8 PDFs by hand from the row.
+export const CAROUSEL_POSTING_METHOD   = process.env.CAROUSEL_POSTING_METHOD   || 'Auto';

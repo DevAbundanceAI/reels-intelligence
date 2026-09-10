@@ -1,0 +1,20 @@
+{
+  "id": "sample-15-to-189",
+  "slug": "sample-15-to-189",
+  "format": "carousel",
+  "pillar": "Receipts",
+  "story_type": "Before/After",
+  "document_title": "15 to 189 clients in 11 months",
+  "caption": "A gym coaching business had 15 clients when the world shut down. Eleven months later it had 189. The ads were not the hard part. Swipe for the three systems.",
+  "hashtags": [],
+  "slides": [
+    {"type": "hook", "eyebrow": "RECEIPTS", "headline": "15 to 189 clients in 11 months. During COVID.", "emphasis": "189 clients", "sub": "The industry everyone wrote off."},
+    {"type": "before_after", "headline": "What changed", "emphasis": "changed", "before": {"label": "Before", "items": ["15 clients", "Manual onboarding", "Ad-hoc fulfillment", "No acquisition engine"]}, "after": {"label": "After", "items": ["189 clients", "$989K generated", "Systems that held", "Four coaches hired"]}},
+    {"type": "point", "number": 1, "headline": "The problem was never attention.", "emphasis": "never attention", "body": "Demand exploded overnight. The problem was not breaking under the weight of it."},
+    {"type": "point", "number": 2, "headline": "Most installs build acquisition first.", "emphasis": "acquisition first", "body": "This one could not afford that order. Fulfillment had to scale at the same speed as demand."},
+    {"type": "list", "eyebrow": "THREE SYSTEMS, AT ONCE", "headline": "What went in, all at once", "emphasis": "all at once", "items": ["Acquisition: capture, qualify, route", "Fulfillment: onboarding automation, group-coaching infrastructure", "Client experience: check-ins, community, retention loops"]},
+    {"type": "point", "number": 3, "headline": "Daily standups through the spike.", "emphasis": "through the spike", "body": "Weekly KPI review. Four coaches recruited while the client count multiplied."},
+    {"type": "stat", "eyebrow": "THE RESULT", "value": "$989K", "label": "generated in 11 months. No quality crash. No retention crater."},
+    {"type": "signoff", "headline": "A system that survives that kind of scale-up survives whatever comes next."}
+  ]
+}

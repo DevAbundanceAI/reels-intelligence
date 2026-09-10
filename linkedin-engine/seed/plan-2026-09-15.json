@@ -1,0 +1,368 @@
+[
+  {
+    "slug": "ai-wont-replace-your-business",
+    "format": "text",
+    "pillar": "AI Installed Right",
+    "story_type": "Contrarian POV",
+    "title": "AI won't replace your business",
+    "angle": "The real threat is a competitor whose team uses AI better than yours, a little more every month, until it compounds into a gap you can't close.",
+    "hook": "AI is not going to replace your business. A competitor whose team uses it better than yours will, a little more every month.",
+    "outline": [
+      "They will out-market, out-sell, and out-deliver with half the team, and it will not happen all at once, it compounds monthly.",
+      "The reality for most teams is one person using ChatGPT like a toy, nothing wired into the actual work, nothing measured.",
+      "Access to AI is not the advantage anymore, everyone has that. The difference is whether it's pointed at the one thing capping the business and wired into the tools the team already uses.",
+      "Wrap: if your team is already ahead of that curve, ignore this. If there is a sliver of doubt, that doubt is the thing to look at."
+    ],
+    "sources": ["VSL v2.29 doctrine (AI implementation)", "Ryan's spoken voice rules"],
+    "schedule": { "date": "2026-09-15", "time": "08:30", "tz": "America/New_York" }
+  },
+  {
+    "slug": "15-to-189-clients-in-11-months",
+    "format": "carousel",
+    "pillar": "Receipts",
+    "story_type": "Before/After",
+    "title": "15 to 189 clients in 11 months, during COVID",
+    "angle": "A gym coaching business scaled 12x during the pandemic by building acquisition, fulfillment, and client experience all at once, because it could not afford to sequence them.",
+    "hook": "A gym coaching business had 15 clients when the world shut down. Eleven months later it had 189. The ads were not the hard part.",
+    "outline": [
+      "Hook: 15 to 189 clients in 11 months, during COVID.",
+      "Before/after: 15 clients, manual onboarding, ad-hoc fulfillment, no acquisition engine -> 189 clients, $989K, systems that held, four coaches hired.",
+      "Point: the problem was never getting attention, demand exploded overnight. The problem was not breaking under the weight of it.",
+      "Point: most installs build acquisition first and worry about fulfillment later. This one could not afford that order.",
+      "List: three systems built all at once - acquisition (capture, qualify, route), fulfillment (onboarding automation, group-coaching infrastructure), client experience (check-ins, community, retention loops).",
+      "Point: daily standups through the spike, weekly KPI review, four coaches recruited while the client count multiplied.",
+      "Stat: $989K, generated in 11 months, no quality crash, no retention crater.",
+      "Signoff: a system that survives that kind of scale-up survives whatever comes next."
+    ],
+    "sources": ["Case study: Big Little Gyms"],
+    "schedule": { "date": "2026-09-16", "time": "08:30", "tz": "America/New_York" }
+  },
+  {
+    "slug": "why-most-ai-projects-change-nothing",
+    "format": "text",
+    "pillar": "AI Installed Right",
+    "story_type": "Lesson/Correction",
+    "title": "Why most AI projects change nothing",
+    "angle": "Most AI installs fail not because the tools don't work, but because they're pointed at whatever is easy instead of the real constraint.",
+    "hook": "Most business owners who try AI never move the needle, and it's not because the tools don't work. It's where they point them.",
+    "outline": [
+      "At every stage of growth there is one constraint capping the business. The mistake almost everybody makes is installing AI where it's easy instead of where the constraint is: automating a newsletter while leads sit six hours before anyone follows up.",
+      "When we open ad accounts, most have numbers that are partly fiction, and most don't even have a dashboard for their own KPIs, so the AI is reading numbers that were never true.",
+      "The order that works: build the coworker with full context first, use it to find the one constraint, then build systems aimed only at that. Once the constraint is solved the whole machine speeds up."
+    ],
+    "sources": ["VSL v2.29 doctrine (AI implementation)", "AI offer research: corrections and reframes"],
+    "schedule": { "date": "2026-09-17", "time": "08:30", "tz": "America/New_York" }
+  },
+  {
+    "slug": "i-built-an-ai-product-and-set-it-aside",
+    "format": "text",
+    "pillar": "Building My Own",
+    "story_type": "Build Log",
+    "title": "I built an AI product in under three months, then set it aside",
+    "angle": "Two non-engineers shipped a production AI coworker in under three months, then Ryan set it aside to focus on advisory work, because that's what people kept actually asking for.",
+    "hook": "My business partner and I built a production AI software product in under three months with no developers. Then I set it aside.",
+    "outline": [
+      "What it was: an AI coworker that does the work instead of advising on it. A task goes in from Slack, it plans, runs the work through the tools the team already uses, and posts the result back for approval. Two non-engineers and AI.",
+      "What building it taught me: the AI brain is rented, the same engine everyone has, so all the value sat in the wrapping, memory, approvals, one client walled off from the next. The hardest part was honesty, we disabled one of our own features because it wasn't real yet, and that turned out to be the most persuasive thing we did.",
+      "Why I set it aside: the people using it kept asking for the same thing, and it wasn't another tool, it was someone to put AI inside their business in the right order. So that's where the time went.",
+      "Wrap: the product taught me more than it earned, and that was the point."
+    ],
+    "sources": ["Venture: Frosty (HeyFrosty.ai)", "VSL v2.29 doctrine (AI implementation)"],
+    "schedule": { "date": "2026-09-18", "time": "08:30", "tz": "America/New_York" }
+  },
+  {
+    "slug": "five-areas-where-ai-pays-off",
+    "format": "carousel",
+    "pillar": "AI Installed Right",
+    "story_type": "Framework",
+    "title": "The five areas where AI actually pays off",
+    "angle": "Most owners have only seen the ChatGPT version of AI. Here are the five real areas, and the foundation almost nobody builds first.",
+    "hook": "Most owners have only ever seen the ChatGPT version of AI. Here are the five areas of a business where it actually pays off.",
+    "outline": [
+      "Hook: five areas where AI pays off. Most people have only seen the ChatGPT version.",
+      "Point Marketing: audits every ad you and your competitors have run, hyper-targeted creative, a funnel per audience in minutes.",
+      "Point Sales: updates the CRM on its own, tracks call numbers reps can't fudge, follows up within minutes.",
+      "Point Fulfillment: onboarding runs itself, first drafts of reports, reads what actually got clients results.",
+      "Point Operations: dashboards and trackers that build themselves, tools built for how you actually run.",
+      "Point God Mode: an AI coworker trained on your whole business, SOPs, pipeline, calls, ads, KPIs. Which campaign made money last month? Ask it.",
+      "Quote: business decisions made on your data and your math, instead of your gut feelings.",
+      "Point: the order matters, coworker first, then find the constraint, then build systems aimed at it.",
+      "Signoff."
+    ],
+    "sources": ["VSL v2.29 doctrine (AI implementation)"],
+    "schedule": { "date": "2026-09-22", "time": "08:30", "tz": "America/New_York" }
+  },
+  {
+    "slug": "compliance-shaped-everything",
+    "format": "text",
+    "pillar": "Building My Own",
+    "story_type": "Challenge Faced",
+    "title": "Compliance shaped everything",
+    "angle": "Co-founding a regulated telehealth brand meant the hardest constraint wasn't demand or ads, it was what could be said and where, so compliance got built into the workflow itself.",
+    "hook": "I co-founded a telehealth brand. The hardest part was not demand, the ads, or the site. It was what we were allowed to say, and where.",
+    "outline": [
+      "Health is a regulated category: what a product page may claim, which ad copy clears review, how testimonials can be used. We built the review into the workflow instead of bolting it on after, so ad copy is compliance-flagged before it runs and claims get reviewed before they publish.",
+      "Certification for paid ads has a queue. Clean applicants clear in weeks, marketing copy that needs rework can take months. So the expensive mistake is applying with the site as-is, scrub first, then apply.",
+      "Wrap: if you're launching in a regulated space, this is the part that stops most teams, and I'd rather you hear it from someone who's already been through it."
+    ],
+    "sources": ["Venture: Expert Health", "Expert Health compliance process"],
+    "schedule": { "date": "2026-09-23", "time": "08:30", "tz": "America/New_York" }
+  },
+  {
+    "slug": "zero-to-2-9m-strong-product-no-engine",
+    "format": "carousel",
+    "pillar": "Receipts",
+    "story_type": "Before/After",
+    "title": "$0 to $2.9M, a strong product with no engine",
+    "angle": "A founder with a working product and zero go-to-market system grew to $2.9M once the full engine was installed, and stopped being the funnel himself.",
+    "hook": "The founder had a product that worked and nothing connecting it to the market. About two years later the company had generated $2.9M.",
+    "outline": [
+      "Hook: $0 to $2.9M in about two years. A strong product, no engine.",
+      "Before/after: no offer positioning, no lead flow, no sales process, no CRM, revenue in spurts off the founder's network -> $2.9M generated, system runs without the founder in every loop.",
+      "Point: the bottleneck was never the product, it was the absence of a system to bring people to it.",
+      "List: every layer, from zero - offer positioning and pricing, organic lead generation, paid acquisition, a discovery-call playbook role-played with the team, CRM pipelines with follow-up, weekly KPI dashboards.",
+      "Point: I also built the company's own application, so the engagement covered the product and the system that sold it.",
+      "Point: the outcome that mattered, the founder stopped being the funnel, and I stepped back to focus on my own companies.",
+      "Quote: you didn't start your company to become its funnel.",
+      "Signoff."
+    ],
+    "sources": ["Case study: Acquisition Network"],
+    "schedule": { "date": "2026-09-24", "time": "08:30", "tz": "America/New_York" }
+  },
+  {
+    "slug": "the-stat-i-want-to-use-and-cant",
+    "format": "text",
+    "pillar": "What I Got Wrong",
+    "story_type": "Lesson/Correction",
+    "title": "The stat I want to use and can't",
+    "angle": "A punchy attribution statistic felt true but couldn't be sourced, so the honest version says 'most' instead of a specific percentage, and that discipline generalizes.",
+    "hook": "There's a stat I want to use and can't: that almost every ad account has broken attribution. It feels true. I can't source it, so I say most.",
+    "outline": [
+      "It feels true because of what we see when we open ad accounts: the lead event fires when the page loads instead of when someone books, no tracking tags on the ads, two pixels arguing with each other. But 'most' is what I can defend.",
+      "A second number died the same way: an unsourced per-call cost figure got replaced with a concrete example job and its real numbers instead of a repeated industry average. Less punchy. True.",
+      "In a market this full of AI claims, the checkable specific is the only thing that reads as honest. If a stranger said 'prove it', could you, on a screen? If not, soften the claim or show the mechanism."
+    ],
+    "sources": ["AI offer research: corrections and reframes", "Cold outreach: what changed after testing"],
+    "schedule": { "date": "2026-09-25", "time": "08:30", "tz": "America/New_York" }
+  },
+  {
+    "slug": "the-vacation-test",
+    "format": "text",
+    "pillar": "Stop Being the Funnel",
+    "story_type": "Framework",
+    "title": "The vacation test",
+    "angle": "One question separates owning a business from owning a job: what happens to revenue if you disappear for two weeks with no phone.",
+    "hook": "One question tells you whether you own a business or a job. If you disappeared for 14 days, no phone, no Slack, what happens to revenue?",
+    "outline": [
+      "You already know your answer, you felt it. The calls don't get closed because you close them. The leads don't get followed up because the follow-up lives in your head. The team waits because every decision runs through you.",
+      "Here's the uncomfortable part: it's not your team's fault. You built it this way, because you were competent enough to be the engine, and competence past the point where it scales becomes the ceiling.",
+      "Every founder I've watched pass this test had the same thing: booking, qualifying, follow-up, and reporting ran whether they were in the room or not.",
+      "Wrap: fourteen days, no phone. Whatever your honest answer is, that's the constraint."
+    ],
+    "sources": ["Voice sample: the vacation test", "Venture: Abundance.AI (how I work)"],
+    "schedule": { "date": "2026-09-29", "time": "08:30", "tz": "America/New_York" }
+  },
+  {
+    "slug": "diagnose-install-operate-hand-over",
+    "format": "carousel",
+    "pillar": "The Playbook",
+    "story_type": "Framework",
+    "title": "Diagnose, install, operate, hand over",
+    "angle": "Ryan's four-step engagement model, run on every client and on his own companies: most growth problems get misdiagnosed as traffic problems.",
+    "hook": "Most growth problems get misdiagnosed as traffic problems. Here's the four-step order I run on every company, including my own.",
+    "outline": [
+      "Hook: diagnose, install, operate, hand over. The order I run on every company, including my own.",
+      "Point Diagnose: time inside your numbers, your funnel, and your market before recommending anything. Most growth problems get misdiagnosed as traffic problems.",
+      "Point Install: build the missing infrastructure, offer, acquisition, conversion, CRM, reporting. My team delivers, I stay accountable for the outcome.",
+      "Point Operate: a weekly cadence against a live dashboard, so decisions run on data instead of opinion, including the decision to kill what isn't working.",
+      "Point Hand over: everything documented and owned by your team. The measure of the engagement is that you stop needing me.",
+      "Stat: $11.5M+, seven engagements, six years. Every one started without a real growth system and ended with one the team owns.",
+      "Signoff."
+    ],
+    "sources": ["Venture: Abundance.AI (how I work)", "Site bio and stat strip"],
+    "schedule": { "date": "2026-09-30", "time": "08:30", "tz": "America/New_York" }
+  },
+  {
+    "slug": "we-stopped-saying-ai-first",
+    "format": "text",
+    "pillar": "What I Got Wrong",
+    "story_type": "Lesson/Correction",
+    "title": "We stopped saying AI in the first line",
+    "angle": "Leading outbound with the word AI reads as noise now, so it got replaced with one verifiable, specific observation about the prospect's own funnel.",
+    "hook": "We took the word AI out of the first line of everything we send to a prospect. Everyone's inbox already has an AI pitch in it.",
+    "outline": [
+      "The confession: our first drafts led with what we do. AI this, automation that. That's exactly what every other message in their inbox says now, so it reads as noise before the second sentence.",
+      "What replaced it: one true, specific observation about their own business. Their booking page fires the lead event when the page loads, not when someone picks a time, so the cost per call in their ads manager looks better than it is.",
+      "The rule that came with it: every finding gets checked against a screenshot or a timestamp before it goes out, because a wrong one isn't just embarrassing, it's a trust problem. No finding, no touch. AI comes up later, once they've seen we actually looked."
+    ],
+    "sources": ["Cold outreach: what changed after testing"],
+    "schedule": { "date": "2026-10-01", "time": "08:30", "tz": "America/New_York" }
+  },
+  {
+    "slug": "what-the-ai-is-never-allowed-to-draw",
+    "format": "carousel",
+    "pillar": "Building My Own",
+    "story_type": "Challenge Faced",
+    "title": "What the AI is never allowed to draw",
+    "angle": "For a health brand, letting AI draw the logo and label text risks a render that gives itself away, so the pipeline hard-codes the branding instead.",
+    "hook": "For my telehealth brand, the AI is never allowed to draw the logo, the label text, or the product name. Here's why that rule exists.",
+    "outline": [
+      "Hook: the AI never draws the label. One rule behind every product photo we ship.",
+      "Point: a health brand lives on trust, and a render that gives itself away tells the customer nobody real is behind the bottle.",
+      "Point: what goes wrong when the model draws text, every generation comes out a slightly different shape with a slightly wrong wordmark, and the line stops matching.",
+      "Point the golden rule: the bottle is a photo, the branding is composited on top in code. The AI only ever makes a blank-label bottle.",
+      "Point: one master template, recolored per product line, so every bottle is the same size, position, and layout, only the color and name change.",
+      "Point: the lesson for any AI build, let the model do the part it's good at, hard-code the part where a mistake costs trust.",
+      "Signoff."
+    ],
+    "sources": ["Expert Health product-label AI rule", "Venture: Expert Health"],
+    "schedule": { "date": "2026-10-02", "time": "08:30", "tz": "America/New_York" }
+  },
+  {
+    "slug": "your-sales-team-should-be-order-takers",
+    "format": "text",
+    "pillar": "Stop Being the Funnel",
+    "story_type": "Contrarian POV",
+    "title": "Your sales team should be order-takers",
+    "angle": "When marketing does the selling before the call, closers stop doing three jobs at once and start just confirming fit and taking the order.",
+    "hook": "Your sales team should be order-takers. I know how that sounds. Let me explain before you close the app.",
+    "outline": [
+      "Right now your closers are doing three jobs: educating the lead, convincing the lead, and closing the lead. That's why your best rep is exhausted.",
+      "Picture the other version. The ad already called out exactly who it's for, the funnel already made the case, the qualification already filtered out everyone who can't buy, so the person on the call already believes. They booked because the marketing did the selling. That's a pre-sold appointment.",
+      "At that point what's left for sales is confirming the fit, handling the real questions, and taking the order. Not because your closers got lazy, because the system in front of them got competent.",
+      "Wrap: if your closers are grinding, the problem is not in the sales call, it's everything that happened before it."
+    ],
+    "sources": ["Voice sample: order-takers", "Venture: Abundance.AI (how I work)"],
+    "schedule": { "date": "2026-10-06", "time": "08:30", "tz": "America/New_York" }
+  },
+  {
+    "slug": "1-6m-by-connecting-the-pieces",
+    "format": "carousel",
+    "pillar": "Receipts",
+    "story_type": "Before/After",
+    "title": "$1.6M by connecting the pieces",
+    "angle": "A client's revenue leaked in the seams between disconnected tools, and connecting the pieces, not adding more, produced $1.6M.",
+    "hook": "This client didn't start at zero. They started somewhere harder: a CRM, funnels, and a pipeline that had never met each other.",
+    "outline": [
+      "Hook: $1.6M by connecting the pieces. Sometimes the job is not to build, it's to connect.",
+      "Before/after: CRM not connected to the ads, funnels not routed into sales, a pipeline with no automations -> one cohesive flow, $1.6M over about two years.",
+      "Point: the seams between the pieces were exactly where revenue leaked.",
+      "List: the connective tissue - one cohesive funnel instead of several, CRM automations at every stage, ads and pages and nurture on one calendar, every drop-off made visible and fixed one leak at a time.",
+      "Point: the result was not more leads, it was fewer dropped ones. Conversion rose at every step because every step finally handed off cleanly.",
+      "Stat: $1.6M, about two years, from partial infrastructure.",
+      "Point: before you buy another tool, check whether the ones you have are talking to each other.",
+      "Signoff."
+    ],
+    "sources": ["Case study: Malik Consolidated"],
+    "schedule": { "date": "2026-10-07", "time": "08:30", "tz": "America/New_York" }
+  },
+  {
+    "slug": "god-mode-explained-plainly",
+    "format": "text",
+    "pillar": "AI Installed Right",
+    "story_type": "Framework",
+    "title": "God Mode, explained plainly",
+    "angle": "The foundation of AI implementation isn't a fancy feature, it's an AI coworker trained on the whole business, built before anything else.",
+    "hook": "In a video game, God Mode means you see everything and nothing touches you. That's what an AI coworker with full business context does.",
+    "outline": [
+      "What it is: a personalized AI coworker trained on your entire business, your SOPs, your team's conversations, every prospect in the pipeline, every sales call, every ad you've run, every KPI. So when you ask which campaign made money last month, it already knows, and it's already drafted the fix.",
+      "Why most attempts at this fail: the AI was never given the business, it was given a prompt. Corrections evaporated in chat history instead of accumulating as rules.",
+      "It's not the fancy part, it's the foundation. Build the coworker first, then use it to find the one constraint, then build automations aimed at that. The AI that helps write our own marketing is trained on my business, my clients, our case studies, and every system we've installed. We run it on ourselves before anyone else.",
+      "Wrap: business decisions made on your data and your math, instead of your gut feelings."
+    ],
+    "sources": ["VSL v2.29 doctrine (AI implementation)"],
+    "schedule": { "date": "2026-10-08", "time": "08:30", "tz": "America/New_York" }
+  },
+  {
+    "slug": "software-that-takes-money-the-deposit-rule",
+    "format": "text",
+    "pillar": "Building My Own",
+    "story_type": "Build Log",
+    "title": "Software that takes money: the deposit rule",
+    "angle": "A crane rental client's site could only ask visitors to call; the software being built instead takes signed, paid orders online, with one rule protecting both sides.",
+    "hook": "A crane rental company's site could only ask you to call. We're building the one that takes signed, paid orders online. One rule matters.",
+    "outline": [
+      "The owner didn't need marketing. He needed infrastructure that transacts: listings with real availability, quote capture that lands in the CRM instead of a voicemail, insurance upload inside the order flow, e-signature on the rental agreement.",
+      "The rule: the deposit is authorized on the card, not captured, until the owner approves the order. A machine can't leave the yard on a bad booking, and a customer never gets charged for one the owner hasn't seen. Enforce it at every door an order can come through.",
+      "The architecture decision: the storefront and the future multi-vendor marketplace are the same codebase, so nothing gets built twice. He launches as vendor one. My team is building it now.",
+      "Wrap: this is the product side of the job, not funnels, software that takes money."
+    ],
+    "sources": ["Case study: MachineryMaps"],
+    "schedule": { "date": "2026-10-09", "time": "08:30", "tz": "America/New_York" }
+  },
+  {
+    "slug": "let-me-guess-what-youve-already-tried",
+    "format": "carousel",
+    "pillar": "Stop Being the Funnel",
+    "story_type": "Lesson/Correction",
+    "title": "Let me guess what you've already tried",
+    "angle": "The VA, the course, the ads agency, the sales coach, the mastermind, none of them failed because the people were bad, each was one part of a machine nobody built.",
+    "hook": "Let me guess everything you've already tried to fix your growth. Stop me when I'm wrong.",
+    "outline": [
+      "Hook: let me guess what you've already tried. Stop me when I'm wrong.",
+      "Point: the VA, you stayed the bottleneck, because the VA needed you for every decision.",
+      "Point: the course, you knew the content by module three and got nothing you could actually install.",
+      "Point: the ads agency, ninety days of we're optimizing, a deck full of click-through rates, and when the calls didn't book, they blamed your offer.",
+      "Point: the sales coach and the fractional CMO, gave you the right script, showed up to the weekly meeting, still moved nothing.",
+      "Point: none of those failed because the people were bad. They failed because each one was a part, and nobody built the machine.",
+      "Point: the order you build in matters more than what you build. Offer first, then traffic, then the systems around it.",
+      "Signoff."
+    ],
+    "sources": ["Voice sample: the tactics graveyard"],
+    "schedule": { "date": "2026-10-13", "time": "08:30", "tz": "America/New_York" }
+  },
+  {
+    "slug": "the-longest-partnership-started-as-the-messiest",
+    "format": "text",
+    "pillar": "Receipts",
+    "story_type": "Before/After",
+    "title": "The longest partnership started as the messiest",
+    "angle": "A two and a half year, $4.6M engagement started with a founder who had revenue but no infrastructure, and ended with a team that runs every system without him.",
+    "hook": "The longest client partnership I've ever run, two and a half years and $4.6M, started as the messiest starting point of any of them.",
+    "outline": [
+      "They had revenue, but every dollar required the founder directly. No funnel, no nurture, no launch infrastructure, no email program, no CRM, so growth meant more of the founder's hours.",
+      "This was not a short install. Over two and a half years my team and I built and rebuilt the stack as the business grew: webinar funnels that ran without the founder, book-a-call funnels for high-ticket offers, segmented email automation, full multi-week launch systems, weekly KPI reviews and quarterly strategy.",
+      "The number was $4.6M. The more durable outcome was the team: they run every funnel, every launch, and every campaign without me in the loop.",
+      "Wrap: that's what a long engagement should produce, a team that doesn't need you anymore, not one that can't function without you."
+    ],
+    "sources": ["Case study: All Done Consulting"],
+    "schedule": { "date": "2026-10-14", "time": "08:30", "tz": "America/New_York" }
+  },
+  {
+    "slug": "why-i-only-publish-totals-now",
+    "format": "text",
+    "pillar": "What I Got Wrong",
+    "story_type": "Lesson/Correction",
+    "title": "Why I only publish totals now",
+    "angle": "An old site carried impressive but untraceable numbers; rebuilding it meant cutting anything that couldn't survive a real diligence conversation.",
+    "hook": "I rebuilt my personal site and left off the two most impressive numbers from my old one. I couldn't trace either on a call.",
+    "outline": [
+      "The confession: an old site of mine carried a big round total and a big round count that sounded great. Every case study I could actually document added up to a smaller number, and a buyer doing diligence reads both, so the vague claim damages the credible one.",
+      "The second thing I found: one case study listed a total and a monthly average, and the monthly average multiplied out to a different total than the one sitting next to it. Monthly averages invite that division, and lose it. So now it's totals only, durations not dates, and every number traces to something I can discuss on a call.",
+      "The placeholder testimonial went too. If it's not real and attributable, the section gets cut.",
+      "Wrap: the site got shorter, and it got a lot easier to defend, and easier to defend turned out to be what people trust."
+    ],
+    "sources": ["Claim rules (PLAN.md)"],
+    "schedule": { "date": "2026-10-15", "time": "08:30", "tz": "America/New_York" }
+  },
+  {
+    "slug": "the-order-you-install-ai-in",
+    "format": "carousel",
+    "pillar": "AI Installed Right",
+    "story_type": "Framework",
+    "title": "The right order to install AI",
+    "angle": "Bench replacement for a held slot: the coworker-constraint-systems order, restated as a standalone framework carousel.",
+    "hook": "Most AI installs fail in the same order. Here's the order that actually works, in three steps.",
+    "outline": [
+      "Hook: the right order to install AI. Most installs fail in the same order.",
+      "Point 1: build the AI coworker first, with full context on the business, before automating anything.",
+      "Point 2: use the coworker to find the one constraint actually capping growth, not the one that's easiest to fix.",
+      "Point 3: build systems aimed only at that constraint. Everything else waits its turn.",
+      "Point: install AI where it's easy instead of where the constraint is, and you get a chatbot while leads still sit for six hours.",
+      "Quote: business decisions made on your data and your math, instead of your gut feelings.",
+      "Signoff."
+    ],
+    "sources": ["VSL v2.29 doctrine (AI implementation)"],
+    "schedule": { "date": "2026-10-16", "time": "08:30", "tz": "America/New_York" }
+  }
+]

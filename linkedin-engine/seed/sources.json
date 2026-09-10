@@ -1,0 +1,342 @@
+[
+  {
+    "title": "Site bio and stat strip",
+    "path": "/workspaces/codespaces-blank/ryanfrost-site/index.html",
+    "repo": "ryanfrost-site",
+    "kind": "Numbers",
+    "claimSafety": "Safe",
+    "extractRaw": true,
+    "substance": "Ryan Frost. Fractional head of growth. 3x founder. Based in Phoenix, Arizona. Six years installing growth engines for founder-led companies. $11.5M+ generated across 7 engagements, 3 ventures. Owned ventures show build-scope stats, not revenue. Order on the site: Expert Health, HeyFrosty, Abundance (Abundance last, no external link, unfinished). How-I-work framework: Diagnose, Install, Operate, Hand over.",
+    "canonicalNumbers": "$11.5M+ total, 7 engagements, 6 years, 3 ventures",
+    "angleIdeas": [
+      "Diagnose/Install/Operate/Hand over as a framework post",
+      "Why totals only, never $/mo",
+      "3x founder bio as a Build Log opener"
+    ]
+  },
+  {
+    "title": "Claim rules (PLAN.md)",
+    "path": "/workspaces/codespaces-blank/ryanfrost-site/PLAN.md",
+    "repo": "ryanfrost-site",
+    "kind": "Numbers",
+    "claimSafety": "Safe",
+    "extractRaw": true,
+    "substance": "Locked integrity rules for itsryanfrost.com: totals only, never $/mo (an old case study's monthly figure did not survive division against its own total, so monthly framings were cut everywhere). The old site's '100+ founders' and '$200M+ lifted' claims do not travel to this site; they are explicitly disowned as unverifiable. No testimonial unless real and attributable; a placeholder testimonial (a named person with invented metrics) was removed rather than kept. Every number must trace to something discussable on a call. Team attribution stays honest: Ciara is CEO of Expert Health, Ryan is Co-founder and President, never hedged.",
+    "canonicalNumbers": "N/A - this source IS the numbers policy",
+    "angleIdeas": [
+      "Why I only publish totals now",
+      "The stat I cut because I could not trace it",
+      "Placeholder testimonials do not survive a real edit"
+    ]
+  },
+  {
+    "title": "Case study: Acquisition Network",
+    "path": "/workspaces/codespaces-blank/ryanfrost-site/case-studies/acquisition-network/index.html",
+    "repo": "ryanfrost-site",
+    "kind": "Case Study",
+    "claimSafety": "Safe",
+    "extractRaw": true,
+    "substance": "Acquisition Network started at zero: no GTM system, no lead flow, no sales process. A strong product with no engine behind it. Revenue happened in spurts and depended entirely on the founder's personal network. Built the full GTM system from scratch: offer positioning, organic and paid lead generation, sales process, CRM infrastructure, and the reporting system to know which numbers to move. Result: $0 to $2.9M generated, in about two years, and the founder stopped being the funnel himself. Ryan also built the company's own application/product, so the engagement covered both the product and the system that sold it.",
+    "canonicalNumbers": "$0 to $2.9M, about two years",
+    "angleIdeas": [
+      "A strong product with no engine: the before state",
+      "$0 to $2.9M, a strong product with no engine",
+      "Stepping back once the founder stopped being the funnel"
+    ]
+  },
+  {
+    "title": "Case study: Smart Sellers Academy",
+    "path": "/workspaces/codespaces-blank/ryanfrost-site/case-studies/smart-sellers-academy/index.html",
+    "repo": "ryanfrost-site",
+    "kind": "Case Study",
+    "claimSafety": "Safe",
+    "extractRaw": true,
+    "substance": "Smart Sellers Academy engaged with zero GTM infrastructure: no defined lead system, no structured sales process, no visibility into what was or was not working. An established team and an established offer, but no engine to amplify either. Complete GTM system installed from the ground up: lead generation, sales process, funnel architecture, CRM pipeline, KPI reporting, built and handed to the team to run. Total generated: $1.5M. IMPORTANT: SSA marketing is currently frozen (a founder-led sales sprint is underway); this receipt may appear only in past tense, never as a present-tense pitch or promotion, and never with a monthly figure.",
+    "canonicalNumbers": "$1.5M total, past-tense only",
+    "angleIdeas": [
+      "A clean blank slate made the install faster (no legacy to untangle)"
+    ]
+  },
+  {
+    "title": "Case study: All Done Consulting",
+    "path": "/workspaces/codespaces-blank/ryanfrost-site/case-studies/all-done-consulting/index.html",
+    "repo": "ryanfrost-site",
+    "kind": "Case Study",
+    "claimSafety": "Safe",
+    "extractRaw": true,
+    "substance": "All Done Consulting had no existing GTM systems: no webinar funnel, no book-a-call infrastructure, no email automation, no launch systems. Ryan engaged as Marketing Systems Lead. Over a two and a half year partnership, built and rebuilt the stack as the business grew: webinar funnels that ran without the founder, book-a-call funnels for high-ticket offers, segmented email automation, full multi-week launch systems, and an operating cadence of weekly KPI reviews and quarterly strategy. Total generated: $4.6M. This is the longest engagement of the seven, and the outcome that mattered most was the team: they run every funnel, launch, and campaign without Ryan in the loop by the end.",
+    "canonicalNumbers": "$4.6M, two and a half years",
+    "angleIdeas": [
+      "The longest partnership started as the messiest starting point",
+      "What a long engagement should produce: transfer, not dependency"
+    ]
+  },
+  {
+    "title": "Case study: Malik Consolidated",
+    "path": "/workspaces/codespaces-blank/ryanfrost-site/case-studies/malik-consolidated/index.html",
+    "repo": "ryanfrost-site",
+    "kind": "Case Study",
+    "claimSafety": "Safe",
+    "extractRaw": true,
+    "substance": "Malik Consolidated had limited GTM infrastructure: some sales process in place, but no funnel strategy, no CRM workflow, no campaign execution layer, no lead-to-close conversion system. Ryan engaged as Growth Marketing Consultant. Started somewhere harder than zero: a CRM, funnels, and a pipeline that had never talked to each other, built by different hands at different times. The seams between the pieces were exactly where revenue leaked. Built the connective tissue: one cohesive funnel instead of several, CRM automations at every stage (no manual handoffs), ads/pages/nurture on one calendar, every drop-off made visible and fixed one leak at a time. The result was not more leads, it was fewer dropped ones; conversion rose at every step because every step finally handed off cleanly. Total generated: $1.6M, about a two-year engagement.",
+    "canonicalNumbers": "$1.6M, about two years",
+    "angleIdeas": [
+      "$1.6M by connecting the pieces",
+      "Before you buy another tool, check if the ones you have talk to each other"
+    ]
+  },
+  {
+    "title": "Case study: Big Little Gyms",
+    "path": "/workspaces/codespaces-blank/ryanfrost-site/case-studies/big-little-gyms/index.html",
+    "repo": "ryanfrost-site",
+    "kind": "Case Study",
+    "claimSafety": "Safe",
+    "extractRaw": true,
+    "substance": "Big Little Gyms was a 15-client coaching business at the start of a major demand spike (the pandemic). Established offer, but acquisition, fulfillment, and client-experience systems were all manual and founder-dependent. Ryan engaged as Growth Operations Lead. The problem was never getting attention; demand exploded overnight. The problem was not breaking under the weight of it. Built acquisition (capture, qualify, route), fulfillment (onboarding automation, group-coaching infrastructure), and client-experience systems (check-ins, community, retention loops) all at once, because the business could not afford to sequence them. Daily standups and weekly KPI review through the spike; four coaches recruited while the client count multiplied. Result: 15 to 189 clients in 11 months, 12x growth, $989K total revenue, no quality crash, no retention crater.",
+    "canonicalNumbers": "15 to 189 clients, 11 months, $989K, 12x, during COVID",
+    "angleIdeas": [
+      "15 to 189 clients in 11 months, during COVID",
+      "Building three systems at once because you cannot afford to sequence them",
+      "A system that survives a 12x scale-up survives whatever comes next"
+    ]
+  },
+  {
+    "title": "Case study: MachineryMaps",
+    "path": "/workspaces/codespaces-blank/ryanfrost-site/case-studies/machinerymaps/index.html",
+    "repo": "ryanfrost-site",
+    "kind": "Case Study",
+    "claimSafety": "Safe",
+    "extractRaw": true,
+    "substance": "MachineryMaps (a crane and heavy-equipment rental client) had a site that could only ask a visitor to call. Ryan's team is building software that transacts instead: listings with real availability, quote capture that lands in the CRM instead of a voicemail, insurance upload inside the order flow, e-signature on the rental agreement. Key rule: the deposit is authorized on the card, not captured, until the owner approves the order, enforced at every entry point, so a bad booking never leaves the yard and a customer is never charged for one the owner has not seen. Architecture decision: the storefront and a future multi-vendor marketplace share one codebase, so nothing gets built twice; the client launches as the first vendor. This is in-build (not yet generating disclosed revenue) and led primarily by Ryan's developer.",
+    "canonicalNumbers": "In build, no revenue figure to cite",
+    "angleIdeas": [
+      "Software that takes money: the deposit-authorization rule",
+      "The storefront and the marketplace are the same codebase on purpose"
+    ]
+  },
+  {
+    "title": "Venture: Expert Health",
+    "path": "/workspaces/codespaces-blank/ryanfrost-site/ventures/expert-health/index.html",
+    "repo": "ryanfrost-site",
+    "kind": "Case Study",
+    "claimSafety": "Safe",
+    "extractRaw": true,
+    "substance": "Expert Health is a telehealth/peptide brand Ryan co-founded (Ciara is CEO, Ryan is Co-founder and President). Health is a regulated category: what a product page may claim, which ad copy clears review, how testimonials can be used are all constrained. Compliance is built into the workflow rather than bolted on after: ad copy is compliance-flagged before it runs, claims are reviewed before they publish. LegitScript certification for paid ads has a queue; clean applicants clear in weeks, while marketing copy that needs rework can take months, so the costly mistake is applying with the site as-is rather than scrubbing first. LegitScript gates PAID ads specifically, not organic content. 12 products live across 9 goal categories.",
+    "canonicalNumbers": "12 products, 9 goal categories. Never a sales/order/revenue figure (Confidential).",
+    "angleIdeas": [
+      "Compliance shaped everything",
+      "What the AI is never allowed to draw (the label rule)",
+      "Clean applications clear in weeks; marketing rework can take months"
+    ]
+  },
+  {
+    "title": "Venture: Frosty (HeyFrosty.ai)",
+    "path": "/workspaces/codespaces-blank/ryanfrost-site/ventures/frosty-ai/index.html",
+    "repo": "ryanfrost-site",
+    "kind": "Case Study",
+    "claimSafety": "Safe",
+    "extractRaw": true,
+    "substance": "Frosty: an AI coworker product Ryan and his business partner built in under three months with no developers, two non-engineers and AI. It plans work, builds it, connects to the tools a team already uses, and delivers the finished result for approval, rather than just giving advice. Building it surfaced a lesson: the AI brain itself is a rented commodity, the same engine everyone has access to, so the real value sat entirely in the wrapping (memory, approvals, per-client isolation). Honesty mattered more than features: a feature was disabled because it was not real yet rather than shipped half-true. Do not use promotional language about it (no sign-up language, no pricing, no site URL) since it is not being actively pushed. The live site currently still says 'Live' with a free-credit offer; treat 'in build, then set aside to focus on advisory work' as the safe framing pending Ryan's confirmation of exact wording.",
+    "canonicalNumbers": "Two non-engineers, production software, under three months. No user or revenue figure.",
+    "angleIdeas": [
+      "I built an AI product in under three months, then set it aside",
+      "The AI brain is rented; the value is in the wrapping",
+      "The feature we disabled because it was not real yet"
+    ]
+  },
+  {
+    "title": "Venture: Abundance.AI (how I work)",
+    "path": "/workspaces/codespaces-blank/ryanfrost-site/ventures/abundance-ai/index.html",
+    "repo": "ryanfrost-site",
+    "kind": "Offer Doc",
+    "claimSafety": "Safe",
+    "extractRaw": true,
+    "substance": "Ryan's engagement model, stated on the live site: Diagnose (time inside the numbers, the funnel, the market before recommending anything; most growth problems get misdiagnosed as traffic problems), Install (build the missing infrastructure: offer, acquisition, conversion, CRM, reporting; the team delivers, Ryan stays accountable for the outcome), Operate (a weekly cadence against a live dashboard so decisions run on data, including the decision to kill what is not working), Hand over (everything documented and owned by the client's team; the real measure of the engagement is that the client stops needing Ryan).",
+    "canonicalNumbers": "N/A - this is the process, not a client's numbers",
+    "angleIdeas": [
+      "Diagnose, install, operate, hand over",
+      "Most growth problems get misdiagnosed as traffic problems"
+    ]
+  },
+  {
+    "title": "VSL v2.29 doctrine (AI implementation)",
+    "path": "/workspaces/codespaces-blank/assessment-funnel/vsl-script.html",
+    "repo": "assessment-funnel",
+    "kind": "VSL Script",
+    "claimSafety": "Safe",
+    "extractRaw": true,
+    "substance": "Core doctrine from the approved VSL: AI is not going to replace a business; a competitor whose team uses AI better will, a little more every month, and it compounds until one day you cannot compete. Most owners have only seen the ChatGPT version of AI (one person using it like a toy, nothing wired into the actual work, nothing measured). Five areas AI pays off: marketing (audits every ad you and competitors have run, hyper-targeted creative, funnels built in minutes), sales (CRM updates itself, call tracking, follow-up within minutes), fulfillment (onboarding runs itself, first-draft reports), operations (dashboards and trackers build themselves), and the foundation, God Mode: an AI coworker trained on the whole business (SOPs, pipeline, calls, ads, KPIs) that already knows the answer to 'which campaign made money last month' and has drafted the fix. The order that works: build the coworker first, use it to find the ONE constraint capping the business, then build systems aimed only at that constraint; installing AI where it's easy instead of where the constraint is (automating a newsletter while leads sit six hours) is the most common mistake. Most ad accounts we open have broken attribution and no real KPI dashboard (say 'most', not a specific percentage, since the harder stat could not be sourced). Proof stack (safe, from the approved script): Smart Sellers Academy $1.5M in about eighteen months; Acquisition Network from an idea to $2.9M in about two years; All Done Consulting from a small monthly base to $4.6M; this year Ryan and his business partner launched an AI software company with no developers, in under three months. Koolaid line: the same AI-assisted systems used for clients are run on Ryan's own marketing first.",
+    "canonicalNumbers": "$1.5M, $2.9M, $4.6M as in the other sources. Say 'most' not '98%' for the attribution stat.",
+    "angleIdeas": [
+      "AI won't replace your business",
+      "Why most AI projects change nothing",
+      "God Mode, explained plainly",
+      "The five areas where AI actually pays off"
+    ]
+  },
+  {
+    "title": "Ryan's spoken voice rules",
+    "path": "/workspaces/codespaces-blank/assessment-funnel/SCRIPT-VOICE-GUIDE.md",
+    "repo": "assessment-funnel",
+    "kind": "Lesson",
+    "claimSafety": "Safe",
+    "extractRaw": true,
+    "substance": "The rulebook behind Ryan's voice, distilled from about 30 script revisions. The one test: copy is done when it survives Ryan reading it aloud. Banned AI-tells: fragment stacks, clever couplets, spec-stamp deliverables, trailing modifiers, unnatural formal phrases, orphan referents, sentence-initial and-chains. His actual voice: cause-and-effect flow, spoken connectors, real specifics over categories, re-anchoring after time gaps, repeating the key concept word, wrap-and-bridge transitions rather than payoff stamps. Hard claim rules: price is never spoken or written; every claim must be literally true at launch; live numbers on itsryanfrost.com are canonical and must be verified before use.",
+    "canonicalNumbers": "N/A - this is a voice/process source",
+    "angleIdeas": [
+      "Why I stopped writing punchy one-liners (they don't survive being said out loud)"
+    ]
+  },
+  {
+    "title": "AI offer research: corrections and reframes",
+    "path": "/workspaces/codespaces-blank/assessment-funnel/god-mode-offer-research.md",
+    "repo": "assessment-funnel",
+    "kind": "Lesson",
+    "claimSafety": "Safe",
+    "extractRaw": true,
+    "substance": "Research findings behind the AI Growth Assessment offer. Reframe: founders did not fail at AI, they pointed it at the wrong thing (industry data: a large share of AI initiatives get scrapped, most GenAI pilots show no bottom-line impact, cite these as general industry findings, not Ryan's own client stats). The '98% of ad accounts have broken attribution' line could not be independently sourced; the correct, defensible phrasing is 'most', not a specific percentage. Common failure mode: founders install AI where it is easy (a chatbot, a newsletter automation) instead of where the real constraint is (broken tracking, slow follow-up).",
+    "canonicalNumbers": "Use 'most' for the attribution claim, never 98%.",
+    "angleIdeas": [
+      "The stat I want to use and can't",
+      "You didn't fail at AI, you pointed it at the wrong thing"
+    ]
+  },
+  {
+    "title": "Cold outreach: what changed after testing",
+    "path": "/workspaces/codespaces-blank/assessment-funnel/cold-outreach-playbook.md",
+    "repo": "assessment-funnel",
+    "kind": "Lesson",
+    "claimSafety": "Safe",
+    "extractRaw": true,
+    "substance": "Lessons from building and testing a cold-outreach system. The word 'AI' was removed from the first line of every outbound message, because every prospect's inbox already has an AI pitch in it and it reads as noise before the second sentence. It was replaced with one true, specific, verifiable observation about the prospect's own funnel (their booking page fires a lead event on page load instead of on a completed booking; their ad has run for weeks with no tracking tag so the CRM can't attribute a booked call to an ad). The rule that came with it: every finding is checked against a screenshot or a timestamp before it goes out, because a wrong finding is not just embarrassing, it damages trust. A separate earlier stat, 'about $1,200 lost per missed call', turned out to be a vendor's repeated math built on a $4,500 job at a certain margin; the honest, defensible version is to describe a concrete example job and its real numbers rather than repeat an unverified industry-wide average. Also corrected: an earlier internal estimate of 'one meeting per 25 dials' was unverified; the realistic planning number for cold calling is closer to one meeting per 150 dials.",
+    "canonicalNumbers": "N/A - describes methodology corrections, not dollar totals",
+    "angleIdeas": [
+      "We stopped saying AI in the first line",
+      "The stat I quietly corrected (and why the smaller number is more honest)"
+    ]
+  },
+  {
+    "title": "Expert Health compliance process",
+    "path": "/workspaces/codespaces-blank/expert-health-website/COMPLIANCE-NEXT-STEP.md",
+    "repo": "expert-health-website",
+    "kind": "Lesson",
+    "claimSafety": "Safe",
+    "extractRaw": true,
+    "substance": "Compliance operating detail for Expert Health, a regulated telehealth brand: ad copy must be compliance-flagged and reviewed before it runs; LegitScript certification (which gates paid advertising specifically, not organic content) moves through a queue where clean applicants clear in a matter of weeks, while applications needing marketing-copy rework take much longer. The practical lesson: scrub site and ad copy against the compliance rubric BEFORE applying, rather than applying with the site as-is and hoping it clears.",
+    "canonicalNumbers": "N/A - process only, no product or sales figures",
+    "angleIdeas": [
+      "Compliance shaped everything (challenge-faced angle)"
+    ]
+  },
+  {
+    "title": "Expert Health product-label AI rule",
+    "path": "/workspaces/codespaces-blank/expert-health-website/scripts/images/product-label/SOP.md",
+    "repo": "expert-health-website",
+    "kind": "Playbook",
+    "claimSafety": "Safe",
+    "extractRaw": true,
+    "substance": "Standard operating rule for Expert Health's product photography pipeline: the AI image model is never allowed to draw the logo, the label text, or the product name directly, because a health brand runs on trust and a render that gives away its own artificiality (a slightly wrong wordmark, inconsistent shape) damages that trust. Instead the bottle photo is generated blank-label, and the real branding (logo, name, layout) is composited on top in code from one master template, recolored per product line, so every bottle in the catalog shares the same size, position, and layout, and only the color and name change. The general lesson: let the AI do the part it is good at (photorealistic rendering) and hard-code the part where a mistake costs trust (exact brand text).",
+    "canonicalNumbers": "N/A - process/lesson only, no product names to be cited",
+    "angleIdeas": [
+      "What the AI is never allowed to draw"
+    ]
+  },
+  {
+    "title": "Voice sample: installation not info",
+    "path": "/workspaces/codespaces-blank/reels-intelligence/content-engine/scripts/2026-08-14-ryan-06-installation-not-info.md",
+    "repo": "content-engine-scripts",
+    "kind": "Voice Sample",
+    "claimSafety": "Safe",
+    "extractRaw": true,
+    "substance": "STRUCTURE ONLY (re-anchor the substance to current AI-implementation positioning, not the retired Selling System offer). A founder asks which course or tool to buy next, having already bought several and knowing the frameworks cold, yet still doing everything manually himself. The point: the gap was never knowledge, it's that nothing got built and wired together to run without him. 'Installation, not info' - someone actually builds the system (or, in the current framing, installs the AI coworker and the systems around the real constraint) so it runs whether he's watching or not. Closing question: before buying the next course or tool, ask who actually does the building.",
+    "canonicalNumbers": "N/A - do not cite a dollar figure for a course purchase in this angle",
+    "angleIdeas": [
+      "You need installation, not info (re-anchored to AI implementation)"
+    ]
+  },
+  {
+    "title": "Voice sample: the vacation test",
+    "path": "/workspaces/codespaces-blank/reels-intelligence/content-engine/scripts/2026-08-14-ryan-08-vacation-test.md",
+    "repo": "content-engine-scripts",
+    "kind": "Voice Sample",
+    "claimSafety": "Safe",
+    "extractRaw": true,
+    "substance": "STRUCTURE ONLY. One test for whether someone owns a business or a job: if you disappeared for 14 days with no phone, what happens to revenue? Most founders already know their honest answer. The uncomfortable truth: it's not the team's fault, it's that the founder built it this way by being competent enough to be the engine, and competence past the point where it scales becomes the ceiling. Founders who pass this test have booking, qualifying, follow-up, and reporting running whether they're in the room or not.",
+    "canonicalNumbers": "N/A",
+    "angleIdeas": [
+      "The vacation test"
+    ]
+  },
+  {
+    "title": "Voice sample: the tactics graveyard",
+    "path": "/workspaces/codespaces-blank/reels-intelligence/content-engine/scripts/2026-08-14-ryan-11-tactic-graveyard.md",
+    "repo": "content-engine-scripts",
+    "kind": "Voice Sample",
+    "claimSafety": "Safe",
+    "extractRaw": true,
+    "substance": "STRUCTURE ONLY, no vendor names. A list of things a stuck founder has usually already tried: a VA (still the bottleneck because every decision needed him), a course (knew the content by module three, nothing installed), an ads agency (ninety days of 'we're optimizing' and a deck of vanity metrics, then blame the offer when calls don't book), a sales coach (the right script, still closing every call himself), a fractional CMO or a mastermind (showed up to the meeting, moved nothing). None of these failed because the people were bad; each one was a single part, and no one built the machine. The order you build in matters more than what you build.",
+    "canonicalNumbers": "N/A",
+    "angleIdeas": [
+      "Let me guess what you've already tried"
+    ]
+  },
+  {
+    "title": "Voice sample: order-takers",
+    "path": "/workspaces/codespaces-blank/reels-intelligence/content-engine/scripts/2026-08-14-ryan-12-order-takers.md",
+    "repo": "content-engine-scripts",
+    "kind": "Voice Sample",
+    "claimSafety": "Safe",
+    "extractRaw": true,
+    "substance": "STRUCTURE ONLY. Contrarian claim: a sales team should be order-takers. Right now most closers do three jobs at once: educating the lead, convincing the lead, and closing the lead, which is why the best rep is exhausted. In the better version, the ad already called out exactly who it's for, the funnel already made the case, qualification already filtered for fit, so the person on the call already believes; that's a pre-sold appointment. What's left for sales is confirming fit, handling real questions, and taking the order, not because the closers got lazy, but because the system in front of them got competent.",
+    "canonicalNumbers": "N/A",
+    "angleIdeas": [
+      "Your sales team should be order-takers"
+    ]
+  },
+  {
+    "title": "Founder origin and market villain (Needs Ryan OK)",
+    "path": "Airtable appKg5KqW82kOucCL / tbl1tkPkABIqyJjrF (Brand DNA, Brand Profile)",
+    "repo": "brand-dna-airtable",
+    "kind": "Numbers",
+    "claimSafety": "Needs Ryan OK",
+    "substance": "Draft founder-origin narrative (Ryan has not confirmed this for public LinkedIn use): a prior coaching business running around $30K/mo, roughly 70 hours a week, several agencies and freelancers and a Slack channel pinging constantly, before building the system that became the Selling System install (now superseded by the AI implementation positioning). The recurring villain across every engagement: a competent founder past the point where personal competence scales, still the engine, still closing every call, still making every decision, and that becomes the ceiling.",
+    "canonicalNumbers": "Do NOT cite the $30K/mo figure or the 70-hours figure without Ryan's explicit sign-off.",
+    "angleIdeas": [
+      "The founder-bottleneck pattern across every engagement (safe framing, no personal dollar figure)"
+    ]
+  },
+  {
+    "title": "Gavin Brooks and Brian Durkee case studies (Needs Ryan OK)",
+    "path": "Airtable appKg5KqW82kOucCL / tblB8WP6OesNv6ovY (Brand DNA, Case Studies)",
+    "repo": "brand-dna-airtable",
+    "kind": "Case Study",
+    "claimSafety": "Needs Ryan OK",
+    "substance": "Two case studies not published on itsryanfrost.com: Gavin Brooks / Go Fast Funding (a 14-day build then a measurement window; a specific cost-per-booked-call figure) and Brian Durkee / Promoting Made Simple (a 14-day build then a measurement window; a specific cost-per-booked-call figure). Both name the client and cite exact per-call cost figures not on the live site.",
+    "canonicalNumbers": "None of these figures are canonical until Ryan confirms them for public use.",
+    "angleIdeas": [
+      "Hold for Ryan's review; do not generate from this source unmarked"
+    ]
+  },
+  {
+    "title": "SSA dashboard internals",
+    "path": "reels-intelligence/../smart-sellers-academy/dashboard/ (multiple files, contents deliberately not extracted)",
+    "repo": "ssa-dashboard",
+    "kind": "Numbers",
+    "claimSafety": "Confidential never",
+    "substance": "",
+    "canonicalNumbers": "",
+    "angleIdeas": [],
+    "notes": "Confidential client internals (P&L position, CAC, show rates, coaching-call transcripts). Path recorded for provenance only; content is intentionally never loaded into this base."
+  },
+  {
+    "title": "Expert Health sales and order data",
+    "path": "expert-health-website (internal sales/ops data, not published)",
+    "repo": "expert-health-website",
+    "kind": "Numbers",
+    "claimSafety": "Confidential never",
+    "substance": "",
+    "canonicalNumbers": "",
+    "angleIdeas": [],
+    "notes": "Confidential (sales/order figures). Path recorded for provenance only; content is intentionally never loaded into this base."
+  }
+]
