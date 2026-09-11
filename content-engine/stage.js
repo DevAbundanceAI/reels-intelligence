@@ -37,7 +37,7 @@ function parseArgs() {
 
 /**
  * Upload one local file into an attachment field via the Airtable content API.
- * 5MB limit per file — slide JPEGs are ~200-400KB.
+ * Actual cap appears to be well above 5MB (a 5.9MB MP4 uploaded fine, Sep 2026); no confirmed hard limit found, keep files reasonably small anyway.
  */
 async function uploadAttachment(recordId, fieldName, filePath) {
   const contentType = filePath.endsWith('.png') ? 'image/png' : 'image/jpeg';

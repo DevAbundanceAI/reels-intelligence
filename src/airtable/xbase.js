@@ -113,7 +113,7 @@ export async function deleteRecords(baseId, table, recordIds) {
 
 /**
  * Upload one local file into an attachment field via the Airtable content
- * API. 5MB per-file cap. Generalized from content-engine/stage.js's
+ * API. Cap is at least a few MB (confirmed a 5.9MB video upload succeeds, Sep 2026); no confirmed hard limit found, keep files reasonably small anyway. Generalized from content-engine/stage.js's
  * uploadAttachment: takes an explicit contentType (that version only
  * handled png/jpg) and an explicit baseId (that version was pinned to
  * AIRTABLE_BASE_ID).
