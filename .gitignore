@@ -11,3 +11,7 @@ linkedin-engine/queue/
 linkedin-engine/output/
 __pycache__/
 *.pyc
+linkedin-engine/broll/shots/
+linkedin-engine/broll/frames/
+linkedin-engine/broll/clips/
+linkedin-engine/broll/check/
