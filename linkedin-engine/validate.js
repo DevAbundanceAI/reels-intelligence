@@ -12,7 +12,7 @@
 
 // Canonical dollar figures allowed anywhere in output (totals only — the
 // live-site whitelist from ryanfrost-site/index.html + case studies).
-const CANONICAL_DOLLARS = ['$11.5M', '$2.9M', '$1.5M', '$4.6M', '$1.6M', '$989K'];
+const CANONICAL_DOLLARS = ['$0', '$11.5M', '$2.9M', '$1.5M', '$4.6M', '$1.6M', '$989K'];
 
 const CTA_LEXICON = [
   'dm me', 'message me', 'link in', 'featured', 'book a call', 'comment below',
@@ -45,12 +45,22 @@ const RELATIVE_TIME = [
   'last week', 'this week', 'yesterday', 'today', 'this month', 'this summer', 'this year',
 ];
 
+function escapeRegExp(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * Word-boundary matching, not naive substring: a plain `.includes('apply')`
+ * would also flag "applicants" or "applying" as a CTA phrase. \b works
+ * fine for multi-word phrases too (it anchors at the phrase's own start
+ * and end), so every lexicon below uses this, not raw includes.
+ */
 function hasAny(lower, list) {
-  return list.filter(term => lower.includes(term));
+  return list.filter(term => new RegExp(`\\b${escapeRegExp(term)}\\b`).test(lower));
 }
 
 /** Core text scan, shared by text posts and carousel captions/slide copy. */
-export function scanCopy(text, { skipConfidential = false } = {}) {
+export function scanCopy(text, { skipConfidential = false, skipProseChecks = false } = {}) {
   const problems = [];
   const t = String(text || '');
   const lower = t.toLowerCase();
@@ -65,8 +75,11 @@ export function scanCopy(text, { skipConfidential = false } = {}) {
   // Every dollar figure must be on the canonical whitelist.
   const dollarMatches = t.match(/\$[\d][\d.,]*[KkMm]?\+?/g) || [];
   for (const m of dollarMatches) {
-    const normalized = m.replace(/,/g, '');
-    if (!CANONICAL_DOLLARS.some(c => c.replace(/,/g, '') === normalized)) {
+    // Strip commas and a trailing "+" so "$11.5M+" matches the "$11.5M"
+    // whitelist entry (the "+" is a legitimate "at least this much" marker
+    // on the aggregate total, not a different, unreviewed number).
+    const normalized = m.replace(/,/g, '').replace(/\+$/, '');
+    if (!CANONICAL_DOLLARS.some(c => c.replace(/,/g, '').replace(/\+$/, '') === normalized)) {
       problems.push(`non-canonical dollar figure: "${m}"`);
     }
   }
@@ -106,34 +119,37 @@ export function scanCopy(text, { skipConfidential = false } = {}) {
   }
   ['oren', 'peptide deal'].forEach(term => { if (lower.includes(term)) problems.push(`confidential term present: "${term}"`); });
 
-  // Fragment-stack detector: 3+ consecutive short sentences, or 3+ starting the same way.
-  const sentences = t.split(/(?<=[.!?])\s+/).filter(Boolean);
-  let shortRun = 0, maxShortRun = 0;
-  for (const s of sentences) {
-    const words = s.trim().split(/\s+/).filter(Boolean).length;
-    shortRun = words <= 4 ? shortRun + 1 : 0;
-    maxShortRun = Math.max(maxShortRun, shortRun);
-  }
-  if (maxShortRun >= 3) problems.push(`fragment-stack detected: ${maxShortRun} consecutive short (<=4 word) sentences`);
-  const startsSame = ['more', 'no', 'not', 'just'];
-  let sameRun = 0, maxSameRun = 0, lastStart = null;
-  for (const s of sentences) {
-    const first = (s.trim().split(/\s+/)[0] || '').toLowerCase().replace(/[.,!?]/g, '');
-    if (startsSame.includes(first) && first === lastStart) { sameRun++; } else { sameRun = startsSame.includes(first) ? 1 : 0; }
-    maxSameRun = Math.max(maxSameRun, sameRun);
-    lastStart = startsSame.includes(first) ? first : null;
-  }
-  if (maxSameRun >= 3) problems.push('fragment-stack detected: 3+ consecutive sentences with the same one-word opener');
+  // Prose-shape checks (fragment-stack, same-opener runs, And-chains, the
+  // read-aloud mean-sentence-length proxy) only make sense for continuous
+  // prose (text posts, captions). Structured slide JSON is short fragments
+  // BY DESIGN, so these are skipped there to avoid meaningless noise.
+  if (!skipProseChecks) {
+    const sentences = t.split(/(?<=[.!?])\s+/).filter(Boolean);
+    let shortRun = 0, maxShortRun = 0;
+    for (const s of sentences) {
+      const words = s.trim().split(/\s+/).filter(Boolean).length;
+      shortRun = words <= 4 ? shortRun + 1 : 0;
+      maxShortRun = Math.max(maxShortRun, shortRun);
+    }
+    if (maxShortRun >= 3) problems.push(`fragment-stack detected: ${maxShortRun} consecutive short (<=4 word) sentences`);
+    const startsSame = ['more', 'no', 'not', 'just'];
+    let sameRun = 0, maxSameRun = 0, lastStart = null;
+    for (const s of sentences) {
+      const first = (s.trim().split(/\s+/)[0] || '').toLowerCase().replace(/[.,!?]/g, '');
+      if (startsSame.includes(first) && first === lastStart) { sameRun++; } else { sameRun = startsSame.includes(first) ? 1 : 0; }
+      maxSameRun = Math.max(maxSameRun, sameRun);
+      lastStart = startsSame.includes(first) ? first : null;
+    }
+    if (maxSameRun >= 3) problems.push('fragment-stack detected: 3+ consecutive sentences with the same one-word opener');
 
-  // Sentence-initial "And" run (flag-level, but we report it as a problem string prefixed FLAG)
-  let andCount = 0;
-  for (const s of sentences) if (/^and\b/i.test(s.trim())) andCount++;
-  if (andCount >= 3) problems.push('FLAG: 3+ sentences start with "And" in this block');
+    let andCount = 0;
+    for (const s of sentences) if (/^and\b/i.test(s.trim())) andCount++;
+    if (andCount >= 3) problems.push('FLAG: 3+ sentences start with "And" in this block');
 
-  // Read-aloud proxy: mean sentence length outside 8-22 words (flag only)
-  if (sentences.length) {
-    const meanWords = sentences.reduce((sum, s) => sum + s.trim().split(/\s+/).filter(Boolean).length, 0) / sentences.length;
-    if (meanWords < 8 || meanWords > 22) problems.push(`FLAG: mean sentence length ${meanWords.toFixed(1)} words (target 8-22)`);
+    if (sentences.length) {
+      const meanWords = sentences.reduce((sum, s) => sum + s.trim().split(/\s+/).filter(Boolean).length, 0) / sentences.length;
+      if (meanWords < 8 || meanWords > 22) problems.push(`FLAG: mean sentence length ${meanWords.toFixed(1)} words (target 8-22)`);
+    }
   }
 
   return problems;
@@ -181,7 +197,9 @@ export function validateDeck(deck) {
       problems.push(`slide ${i + 1}: emphasis "${s.emphasis}" not found in headline`);
     }
     if (s.headline && s.headline.split(/\s+/).length > 12) problems.push(`slide ${i + 1}: headline over 12 words`);
-    const words = [s.headline, s.sub, s.body, s.label, s.line, ...(s.items || [])].filter(Boolean).join(' ').split(/\s+/).filter(Boolean).length;
+    const nestedItems = [...(s.items || []), ...((s.before && s.before.items) || []), ...((s.after && s.after.items) || [])];
+    const words = [s.headline, s.sub, s.body, s.label, s.line, s.value, s.quote, s.attribution, ...nestedItems]
+      .filter(Boolean).join(' ').split(/\s+/).filter(Boolean).length;
     totalWords += words;
     if (words > 30) problems.push(`slide ${i + 1}: ~${words} words (max ~30 per slide)`);
   }
@@ -206,7 +224,7 @@ export function validateDeck(deck) {
 
   problems.push(...scanCopy(caption));
   problems.push(...scanCopy(docTitle));
-  problems.push(...scanCopy(JSON.stringify(slides)));
+  problems.push(...scanCopy(JSON.stringify(slides), { skipProseChecks: true }));
 
   return [...new Set(problems)];
 }
